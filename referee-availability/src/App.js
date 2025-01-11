@@ -32,27 +32,43 @@ const App = () => {
   const weeks = getNextWeeks(startDate, 5);
 
   const toggleAvailability = (weekStart, day, hour) => {
-    const slot = `${weekStart}-${day}-${hour}`;
+    const slot = `${weekStart}-${day}-${hour}`; // Correct slot format
     setAvailability((prev) => ({
       ...prev,
-      [slot]: !prev[slot],
+      [slot]: !prev[slot], // Toggle the slot's availability
     }));
   };
-
+  
   const handleSubmit = async (e, weekStart) => {
     e.preventDefault();
-    const weekAvailability = Object.keys(availability).filter((slot) => slot.startsWith(weekStart));
-    const availabilitySlots = weekAvailability.map((slot) => slot.split("-")[2]);
-
+  
+    if (!refereeName) {
+      alert("Please enter your referee name.");
+      return;
+    }
+  
+    const weekAvailability = Object.keys(availability)
+      .filter((slot) => slot.startsWith(weekStart) && availability[slot]); // Include only highlighted slots
+  
+    const availabilitySlots = weekAvailability.map((slot) => {
+      const day = slot.split("-")[3]; // Extract the day
+      const hour = parseInt(slot.split("-")[4], 10); // Extract and parse the hour as an integer
+      return `${day} ${hour}:00-${hour + 1}:00`; // Format as "Day Start-End"
+    });
+  
+    console.log("Filtered Week Availability:", weekAvailability);
+    console.log("Formatted Availability Slots:", availabilitySlots);
+  
     try {
       await addOrUpdateAvailability(refereeName, weekStart, availabilitySlots);
       alert("Availability submitted successfully!");
     } catch (error) {
       console.error("Error submitting availability:", error);
-      alert("There was an error submitting your availability.");
+      alert(`There was an error submitting your availability: ${error.message}`);
     }
   };
-
+  
+  
   return (
     <div className="App">
       <h1>Referee Availability</h1>
@@ -74,8 +90,8 @@ const App = () => {
               <div className="scheduler">
                 {days.map((day, dayIndex) => {
                   const currentDate = new Date(weekStart);
-                  currentDate.setDate(currentDate.getDate() + dayIndex);
-                  const dayString = currentDate.toISOString().split('T')[0];
+                  currentDate.setDate(currentDate.getDate() + dayIndex); // Calculate the correct date for each day
+                  const dayString = day; // Use the day name (e.g., "Monday")
                   return (
                     <div key={day} className="day-column">
                       <h3>{day} {currentDate.getDate()}</h3>
