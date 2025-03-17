@@ -1,0 +1,93 @@
+/* Game Manager Page Styles */
+.game-manager {
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to bottom right, #34495e, #2c3e50);
+    color: white;
+    min-height: 100vh;
+  }
+  
+  h1, h2 {
+    text-align: center;
+  }
+  
+  .game-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .game-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+  }
+  
+  .game-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  .game-form button {
+    background-color: #1abc9c;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .game-form button:hover {
+    background-color: #16a085;
+  }
+  
+  /* Game List Styles */
+  .game-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 20px; /* Spacing between games */
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .game-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  .game-item p {
+    margin: 5px 0;
+    color: #ecf0f1;
+  }
+  
+  .game-item strong {
+    color: #f39c12;
+  }
+  
+  .game-item button {
+    background-color: #3498db;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .game-item button:hover {
+    background-color: #2980b9;
+  }
+  

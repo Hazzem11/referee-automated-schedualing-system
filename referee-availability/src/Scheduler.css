@@ -1,0 +1,124 @@
+/* General Page Styles */
+.scheduler-page {
+    padding: 20px;
+    background: linear-gradient(to bottom right, #2c3e50, #4ca1af);
+    min-height: 100vh;
+    color: #ecf0f1;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .scheduler-page h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Styles */
+  .form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .form-group input {
+    padding: 10px;
+    width: 50%;
+    max-width: 400px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+  
+  /* Scheduler Container Styles */
+  .scheduler-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .week-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .week-container h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  /* Schedule Grid Styles */
+  .scheduler {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .day-column {
+    flex: 1;
+    min-width: 150px;
+    background-color: rgba(52, 73, 94, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .day-column h3 {
+    background-color: #34495e;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    font-size: 1rem;
+  }
+  
+  /* Hour Slot Styles */
+  .hour-slot {
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+  }
+  
+  .hour-slot:hover {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+  }
+  
+  .hour-slot.selected {
+    background-color: #8bc34a;
+    color: white;
+    border-color: #8bc34a;
+  }
+  
+  /* Submit Button Styles */
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #2980b9;
+  }
+  

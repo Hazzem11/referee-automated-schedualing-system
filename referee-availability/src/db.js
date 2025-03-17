@@ -32,5 +32,5 @@ const addOrUpdateAvailability = async (refereeName, weekStart, availability) => 
     });
   }
 };
-
+export {db}
 export { addOrUpdateAvailability };
