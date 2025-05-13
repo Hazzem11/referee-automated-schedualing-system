@@ -1,22 +1,32 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDrQkUeFkdeSFqfigF1BIbKEUSIQlZqrCE",
-  authDomain: "referee-availability-manager.firebaseapp.com",
-  projectId: "referee-availability-manager",
-  storageBucket: "referee-availability-manager.firebasestorage.app",
-  messagingSenderId: "10335885142",
-  appId: "1:10335885142:web:28338b5cffc871df91e8f7",
-  measurementId: "G-5Y355WDWT0"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const addOrUpdateAvailability = async (refereeName, weekStart, availability) => {
+const addOrUpdateAvailability = async (
+  refereeName,
+  weekStart,
+  availability
+) => {
   const docRef = doc(db, "availability", refereeName);
   const docSnap = await getDoc(docRef);
 
@@ -28,9 +38,9 @@ const addOrUpdateAvailability = async (refereeName, weekStart, availability) => 
     await setDoc(docRef, {
       refereeName,
       availability: { [weekStart]: availability },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   }
 };
-export {db}
+export { db };
 export { addOrUpdateAvailability };
