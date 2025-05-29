@@ -14,18 +14,19 @@ The Referee Availability Management System is designed to streamline the process
 
 ## Technologies Used
 
-- Python (Backend)
-- Django or Flask (Web Framework)
-- PostgreSQL or SQLite (Database)
-- HTML, CSS, JavaScript (Frontend)
+- Node.js (Backend)
+- Java (Backend)
+- Firebase (Database & Authentication)
+- React (Frontend)
 - RESTful API
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.x
-- pip (Python package manager)
+- Node.js (v14 or higher)
+- Java JDK 11 or higher
+- npm (Node package manager)
 - Git
 
 ### Installation
@@ -36,22 +37,21 @@ The Referee Availability Management System is designed to streamline the process
     cd referee-availability
     ```
 
-2. Install dependencies:
+2. Install Node.js dependencies:
     ```bash
-    pip install -r requirements.txt
+    npm install
     ```
 
-3. Set up the database:
-    ```bash
-    python manage.py migrate
-    ```
+3. Set up Firebase:
+    - Create a Firebase project and download your service account key
+    - Place the service account key file in the project root as `serviceAccountKey.json`
 
 4. Run the development server:
     ```bash
-    python manage.py runserver
+    npm start
     ```
 
-5. Access the application at `http://localhost:8000`
+5. Access the application at `http://localhost:3000`
 
 ## Usage
 
@@ -69,4 +69,4 @@ This project is licensed under the MIT License.
 
 ## Contact
 
-For questions or support, please contact [your.email@example.com](mailto:your.email@example.com).
+For questions or support, please contact [hazzem.sukar11@gmail.com](mailto:hazzem.sukar11@gmail.com).
