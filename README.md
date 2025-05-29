@@ -63,9 +63,6 @@ The Referee Availability Management System is designed to streamline the process
 
 Contributions are welcome! Please fork the repository and submit a pull request.
 
-## License
-
-This project is licensed under the MIT License.
 
 ## Contact
 
