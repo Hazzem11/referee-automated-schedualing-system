@@ -74,10 +74,11 @@ const UpdatesPage = () => {
       totalSlots += todaysSlots.length;
     }
     const totalRefs = list.length;
-    const pct = totalRefs === 0 ? null : Math.round((availableRefs / totalRefs) * 100);
-    const band = pct == null ? "none" : pct < 40 ? "low" : pct <= 50 ? "mid" : "high";
-    return { availableRefs, totalSlots, totalRefs, pct, band };
-  }, [referees, today]);
+    const refsNeeded = todaysGames.reduce((sum, g) => sum + (g?.requiredReferees ?? 2), 0);
+    const pct = refsNeeded === 0 ? null : Math.round((availableRefs / refsNeeded) * 100);
+    const band = pct == null ? "none" : pct < 50 ? "low" : pct < 100 ? "mid" : "high";
+    return { availableRefs, totalSlots, totalRefs, refsNeeded, pct, band };
+  }, [referees, todaysGames, today]);
 
   return (
     <section className="board-page">
@@ -121,7 +122,7 @@ const UpdatesPage = () => {
             ) : (
               <span
                 className={`availability-indicator availability-${availabilitySummary.band}`}
-                title={`${availabilitySummary.availableRefs} of ${availabilitySummary.totalRefs} referees available today`}
+                title={`${availabilitySummary.availableRefs} refs available · ${availabilitySummary.refsNeeded} slots needed today`}
               >
                 <span className="availability-dot" aria-hidden="true" />
                 {availabilitySummary.pct}%
