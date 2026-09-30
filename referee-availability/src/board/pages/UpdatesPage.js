@@ -75,8 +75,12 @@ const UpdatesPage = () => {
     }
     const totalRefs = list.length;
     const gamesToday = todaysGames.length;
-    const pct = gamesToday === 0 ? null : Math.round((availableRefs / (2 * gamesToday)) * 100);
-    const band = pct == null ? "none" : pct > 100 ? "high" : pct >= 50 ? "mid" : "low";
+    // Calibrated to board turnout (~25% of 200 refs available daily): green above
+    // 1.75 available refs per game, yellow down to 1, red below 1.
+    const TARGET_REFS_PER_GAME = 1.75;
+    const ratio = gamesToday === 0 ? null : availableRefs / gamesToday;
+    const pct = ratio == null ? null : Math.round((ratio / TARGET_REFS_PER_GAME) * 100);
+    const band = ratio == null ? "none" : ratio > TARGET_REFS_PER_GAME ? "high" : ratio >= 1 ? "mid" : "low";
     return { availableRefs, totalSlots, totalRefs, gamesToday, pct, band };
   }, [referees, todaysGames, today]);
 
@@ -122,7 +126,7 @@ const UpdatesPage = () => {
             ) : (
               <span
                 className={`availability-indicator availability-${availabilitySummary.band}`}
-                title={`${availabilitySummary.availableRefs} refs available · ${availabilitySummary.gamesToday} games today (healthy target: ${2 * availabilitySummary.gamesToday}+ refs)`}
+                title={`${availabilitySummary.availableRefs} refs available · ${availabilitySummary.gamesToday} games today (healthy target: ${Math.ceil(1.75 * availabilitySummary.gamesToday)}+ refs)`}
               >
                 <span className="availability-dot" aria-hidden="true" />
                 {availabilitySummary.pct}%
