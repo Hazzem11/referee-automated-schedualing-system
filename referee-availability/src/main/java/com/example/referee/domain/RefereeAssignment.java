@@ -1,26 +1,21 @@
 package com.example.referee.domain;
 
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
-import javax.persistence.*;
-
-@Entity
+/**
+ * One slot to fill with a referee for a given game (multiple slots per game when crew &gt; 1).
+ */
 @PlanningEntity
 public class RefereeAssignment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @PlanningId
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
     private Game game;
 
-    @ManyToOne
-    @JoinColumn(name = "referee_id")
-    @PlanningVariable(valueRangeProviderRefs = "refereeRange")
+    @PlanningVariable(valueRangeProviderRefs = "refereeRange", nullable = true)
     private Referee referee;
 
     private String status;
@@ -33,7 +28,6 @@ public class RefereeAssignment {
         this.game = game;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -73,4 +67,4 @@ public class RefereeAssignment {
     public void setScore(int score) {
         this.score = score;
     }
-} 
+}

@@ -185,9 +185,12 @@ public class RefereeAssignmentTest {
     private static List<RefereeAssignment> createSampleAssignments(List<Game> games) {
         List<RefereeAssignment> assignments = new ArrayList<>();
         for (Game game : games) {
-            RefereeAssignment assignment = new RefereeAssignment(game);
-            assignment.setId(assignmentIdCounter.getAndIncrement());
-            assignments.add(assignment);
+            int slots = Math.max(1, game.getRequiredReferees());
+            for (int i = 0; i < slots; i++) {
+                RefereeAssignment assignment = new RefereeAssignment(game);
+                assignment.setId(assignmentIdCounter.getAndIncrement());
+                assignments.add(assignment);
+            }
         }
         return assignments;
     }

@@ -1,6 +1,5 @@
 package com.example.referee.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class RefereeDTO {
@@ -10,20 +9,13 @@ public class RefereeDTO {
     private String phone;
     private int experienceLevel;
     private String homeLocation;
+    private int maxTravelDistance;
+    private List<String> preferredLocations;
+    private int maxGamesPerWeek;
+    private int currentAssignments;
     private List<TimeSlotDTO> availability;
     private String status;
 
-    public RefereeDTO() {
-    }
-
-    public RefereeDTO(Long id, String name, int experienceLevel, String homeLocation) {
-        this.id = id;
-        this.name = name;
-        this.experienceLevel = experienceLevel;
-        this.homeLocation = homeLocation;
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -72,6 +64,38 @@ public class RefereeDTO {
         this.homeLocation = homeLocation;
     }
 
+    public int getMaxTravelDistance() {
+        return maxTravelDistance;
+    }
+
+    public void setMaxTravelDistance(int maxTravelDistance) {
+        this.maxTravelDistance = maxTravelDistance;
+    }
+
+    public List<String> getPreferredLocations() {
+        return preferredLocations;
+    }
+
+    public void setPreferredLocations(List<String> preferredLocations) {
+        this.preferredLocations = preferredLocations;
+    }
+
+    public int getMaxGamesPerWeek() {
+        return maxGamesPerWeek;
+    }
+
+    public void setMaxGamesPerWeek(int maxGamesPerWeek) {
+        this.maxGamesPerWeek = maxGamesPerWeek;
+    }
+
+    public int getCurrentAssignments() {
+        return currentAssignments;
+    }
+
+    public void setCurrentAssignments(int currentAssignments) {
+        this.currentAssignments = currentAssignments;
+    }
+
     public List<TimeSlotDTO> getAvailability() {
         return availability;
     }
@@ -87,4 +111,4 @@ public class RefereeDTO {
     public void setStatus(String status) {
         this.status = status;
     }
-} 
+}

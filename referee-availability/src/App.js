@@ -1,33 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import "./App.css";
 import Scheduler from "./Scheduler";
 import GameManager from "./GameManager";
 import AssignmentVisualizer from "./components/AssignmentVisualizer";
 import RefereeList from "./components/RefereeList";
+import BoardLayout from "./board/BoardLayout";
+import UpdatesPage from "./board/pages/UpdatesPage";
+import MyGamesPage from "./board/pages/MyGamesPage";
+import RulesPage from "./board/pages/RulesPage";
+import SectionPlaceholderPage from "./board/pages/SectionPlaceholderPage";
+import ExecutiveTeamPage from "./board/pages/ExecutiveTeamPage";
+import LocationsPage from "./board/pages/LocationsPage";
+import ExecutiveMinutesPage from "./board/pages/ExecutiveMinutesPage";
+import TodayGamesPage from "./board/pages/TodayGamesPage";
+import TournamentsPage from "./board/pages/TournamentsPage";
+import TrainingPage from "./board/pages/TrainingPage";
+import AccountPage from "./board/pages/AccountPage";
+import QuestionsPage from "./board/pages/QuestionsPage";
+import DuesFeesPage from "./board/pages/DuesFeesPage";
+import ReportFormPage from "./board/pages/ReportFormPage";
+import MemberDirectoryPage from "./board/pages/MemberDirectoryPage";
+import { MEMBERS, REFEREE_COACHES } from "./board/data/membersData";
+import LoginPage from "./pages/LoginPage";
+import { AuthProvider } from "./auth/AuthProvider";
+import { useAuth } from "./auth/AuthContext";
+import { RequireAuth } from "./auth/RequireAuth";
+import { RequireRole } from "./auth/RequireRole";
+import { DEMO_ROLES } from "./auth/roles";
+
+const RootRedirect = () => {
+  const { isAuthenticated } = useAuth();
+  return (
+    <Navigate
+      to={isAuthenticated ? "/board/members/updates" : "/login"}
+      replace
+    />
+  );
+};
 
 const Home = () => {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
     // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem("theme") || "light";
     setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+    const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
   };
 
   return (
     <div className="home-container">
       <header className="home-header">
         <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-          {theme === 'light' ? (
+          {theme === "light" ? (
             <>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
@@ -54,7 +87,7 @@ const Home = () => {
         <h1>Referee Availability Manager</h1>
         <p className="subtitle">Streamline your game assignments with our automated scheduling system</p>
       </header>
-      
+
       <div className="features-grid">
         <div className="feature-card">
           <div className="icon-container">
@@ -94,21 +127,208 @@ const Home = () => {
             Manage Team
           </Link>
         </div>
+
+        <div className="feature-card">
+          <div className="icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 6h16M4 10h16M4 14h10M4 18h16" />
+            </svg>
+          </div>
+          <h2>Manage Games</h2>
+          <p>Add matches that need officials; data feeds the automated scheduler</p>
+          <Link to="/games" className="action-button">
+            Open Game Manager
+          </Link>
+        </div>
       </div>
     </div>
   );
 };
 
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/" element={<RootRedirect />} />
+
+    <Route path="/legacy" element={<Home />} />
+    <Route path="/scheduler" element={<Scheduler />} />
+    <Route path="/games" element={<GameManager />} />
+    <Route path="/assignments" element={<AssignmentVisualizer backHref="/legacy" />} />
+    <Route path="/referees" element={<RefereeList backHref="/legacy" />} />
+
+    <Route
+      path="/board"
+      element={
+        <RequireAuth>
+          <BoardLayout />
+        </RequireAuth>
+      }
+    >
+      <Route index element={<Navigate to="/board/members/updates" replace />} />
+
+      <Route path="public/executive-team" element={<ExecutiveTeamPage />} />
+      <Route path="public/locations" element={<LocationsPage />} />
+
+      <Route path="members/updates" element={<UpdatesPage />} />
+      <Route path="members/rules" element={<RulesPage />} />
+      <Route
+        path="members/policies"
+        element={
+          <SectionPlaceholderPage
+            title="Policies & Procedures"
+            subtitle="Member policies, procedures, and governance references."
+          />
+        }
+      />
+      <Route
+        path="members/list"
+        element={
+          <MemberDirectoryPage
+            title="Members"
+            subtitle="Member directory with contact information."
+            members={MEMBERS}
+          />
+        }
+      />
+      <Route
+        path="members/referee-coach-list"
+        element={
+          <MemberDirectoryPage
+            title="Referee Coach List"
+            subtitle="Referee coach contacts and assignment details."
+            members={REFEREE_COACHES}
+            showRole
+          />
+        }
+      />
+
+      <Route path="games">
+        <Route path="my-games" element={<MyGamesPage />} />
+        <Route path="availability" element={<Scheduler embedded />} />
+        <Route path="tournaments" element={<TournamentsPage />} />
+        <Route path="training" element={<TrainingPage />} />
+        <Route path="today" element={<TodayGamesPage />} />
+        <Route
+          path="manage"
+          element={
+            <RequireRole allow={[DEMO_ROLES.GAME_ASSIGNER]}>
+              <GameManager embedded />
+            </RequireRole>
+          }
+        />
+      </Route>
+
+      <Route
+        path="evaluations/my-games"
+        element={
+          <RequireRole allow={[DEMO_ROLES.REFEREE_COACH]}>
+            <SectionPlaceholderPage title="My Games (Evaluate)" subtitle="Evaluation-specific game list for referees." />
+          </RequireRole>
+        }
+      />
+      <Route
+        path="evaluations/docs"
+        element={
+          <RequireRole allow={[DEMO_ROLES.REFEREE_COACH]}>
+            <SectionPlaceholderPage title="Evaluation Docs" subtitle="Evaluation forms, guides, and reference documents." />
+          </RequireRole>
+        }
+      />
+
+      <Route path="reports/lateness" element={<ReportFormPage reportType="lateness" />} />
+      <Route path="reports/absence" element={<ReportFormPage reportType="absence" />} />
+      <Route path="reports/incident" element={<ReportFormPage reportType="incident" />} />
+      <Route path="reports/executive-minutes" element={<ExecutiveMinutesPage />} />
+      <Route
+        path="reports/constitution"
+        element={<SectionPlaceholderPage title="Constitution" subtitle="Constitution documents and amendments." />}
+      />
+
+      <Route path="admin">
+        <Route path="account" element={<AccountPage />} />
+        <Route
+          path="questions"
+          element={
+            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
+              <QuestionsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="dues-fees"
+          element={
+            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
+              <DuesFeesPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="register"
+          element={
+            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
+              <SectionPlaceholderPage title="Register" subtitle="Registration workflows for members and events." />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="password"
+          element={
+            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
+              <SectionPlaceholderPage title="Password" subtitle="Password reset and account security settings." />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="suspensions"
+          element={
+            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
+              <SectionPlaceholderPage title="Suspensions" subtitle="Suspension records and status tracking." />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="auto-assign"
+          element={
+            <RequireRole allow={[DEMO_ROLES.GAME_ASSIGNER]}>
+              <AssignmentVisualizer
+                backHref="/board/members/updates"
+                secondaryHref="/board/admin/referees"
+                secondaryLabel="Referees"
+              />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="referees"
+          element={
+            <RequireRole allow={[DEMO_ROLES.GAME_ASSIGNER]}>
+              <RefereeList
+                backHref="/board/members/updates"
+                secondaryHref="/board/admin/auto-assign"
+                secondaryLabel="Auto-Assign"
+              />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="logout"
+          element={
+            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
+              <SectionPlaceholderPage title="Logout" subtitle="Demo logout entry point (auth flow to be wired)." />
+            </RequireRole>
+          }
+        />
+      </Route>
+    </Route>
+  </Routes>
+);
+
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/scheduler" element={<Scheduler />} />
-        <Route path="/games" element={<GameManager />} />
-        <Route path="/assignments" element={<AssignmentVisualizer />} />
-        <Route path="/referees" element={<RefereeList />} />
-      </Routes>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </Router>
   );
 };

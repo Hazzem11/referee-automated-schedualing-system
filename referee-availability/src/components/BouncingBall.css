@@ -1,0 +1,170 @@
+.bouncing-ball-wrap {
+  --ball-size: 28px;
+  --bounce-height: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.bouncing-ball-wrap--floating {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+.bouncing-ball-wrap--hero {
+  margin: 0 auto 1rem;
+  pointer-events: auto;
+}
+
+.bouncing-ball-stage {
+  height: calc(var(--ball-size) + var(--bounce-height));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bouncing-ball {
+  width: var(--ball-size);
+  height: var(--ball-size);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.bouncing-ball svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.bouncing-ball:hover {
+  filter: drop-shadow(0 4px 8px rgba(232, 98, 26, 0.4));
+  transform: scale(1.08);
+}
+
+.bouncing-ball.bouncing {
+  animation: ball-bounce 0.52s linear;
+}
+
+.bouncing-ball.bouncing:hover {
+  transform: none;
+}
+
+.bouncing-ball-shadow {
+  width: calc(var(--ball-size) * 0.72);
+  height: calc(var(--ball-size) * 0.1);
+  margin-top: 2px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+  border-radius: 50%;
+  opacity: 0.35;
+}
+
+.bouncing-ball-wrap:has(.bouncing-ball.bouncing) .bouncing-ball-shadow {
+  animation: ball-shadow 0.52s linear;
+}
+
+@keyframes ball-bounce {
+  0% {
+    transform: translateY(0) rotate(0deg) scaleY(0.94);
+  }
+  8% {
+    transform: translateY(calc(var(--bounce-height) * -0.55)) rotate(4deg);
+  }
+  16% {
+    transform: translateY(calc(var(--bounce-height) * -0.88)) rotate(8deg);
+  }
+  24% {
+    transform: translateY(calc(var(--bounce-height) * -0.98)) rotate(10deg);
+  }
+  32% {
+    transform: translateY(calc(var(--bounce-height) * -1)) rotate(11deg) scaleY(1);
+  }
+  40% {
+    transform: translateY(calc(var(--bounce-height) * -0.98)) rotate(10deg);
+  }
+  50% {
+    transform: translateY(calc(var(--bounce-height) * -0.88)) rotate(7deg);
+  }
+  62% {
+    transform: translateY(calc(var(--bounce-height) * -0.62)) rotate(3deg);
+  }
+  76% {
+    transform: translateY(calc(var(--bounce-height) * -0.28)) rotate(1deg);
+  }
+  88% {
+    transform: translateY(calc(var(--bounce-height) * -0.06)) rotate(0deg);
+  }
+  94% {
+    transform: translateY(2px) rotate(0deg) scaleY(0.9);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scaleY(0.94);
+  }
+}
+
+@keyframes ball-shadow {
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.35;
+  }
+  8% {
+    transform: scaleX(0.72) scaleY(0.85);
+    opacity: 0.22;
+  }
+  16% {
+    transform: scaleX(0.6) scaleY(0.75);
+    opacity: 0.16;
+  }
+  32% {
+    transform: scaleX(0.52) scaleY(0.7);
+    opacity: 0.12;
+  }
+  50% {
+    transform: scaleX(0.58) scaleY(0.72);
+    opacity: 0.15;
+  }
+  62% {
+    transform: scaleX(0.7) scaleY(0.8);
+    opacity: 0.2;
+  }
+  76% {
+    transform: scaleX(0.88) scaleY(0.92);
+    opacity: 0.32;
+  }
+  88% {
+    transform: scaleX(0.96) scaleY(0.98);
+    opacity: 0.38;
+  }
+  94% {
+    transform: scaleX(1.08) scaleY(1.05);
+    opacity: 0.48;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bouncing-ball.bouncing,
+  .bouncing-ball-shadow {
+    animation: none;
+  }
+
+  .bouncing-ball:hover {
+    transform: scale(1.05);
+  }
+}
+
+@media (max-width: 640px) {
+  .bouncing-ball-wrap--floating {
+    bottom: 1rem;
+    right: 1rem;
+  }
+}

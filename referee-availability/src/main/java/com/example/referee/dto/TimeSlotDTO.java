@@ -1,12 +1,15 @@
 package com.example.referee.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 
 public class TimeSlotDTO {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private boolean isAvailable;
+    @JsonProperty("isAvailable")
+    private boolean available = true;
 
     // Getters and Setters
     public Long getId() {
@@ -34,10 +37,10 @@ public class TimeSlotDTO {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
     public void setAvailable(boolean available) {
-        isAvailable = available;
+        this.available = available;
     }
 } 

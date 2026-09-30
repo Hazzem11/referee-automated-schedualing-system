@@ -6,6 +6,19 @@
     color: white;
     min-height: 100vh;
   }
+
+  .game-manager.embedded {
+    padding: 0;
+    background: transparent;
+    color: var(--text-color);
+    min-height: auto;
+    font-family: inherit;
+  }
+
+  .game-manager.embedded h1,
+  .game-manager.embedded h2 {
+    color: var(--text-color);
+  }
   
   h1, h2 {
     text-align: center;
@@ -22,6 +35,13 @@
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
   }
+
+  .game-manager.embedded .game-form {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px -8px var(--shadow-color);
+    max-width: 680px;
+  }
   
   .game-form label {
     display: flex;
@@ -35,6 +55,12 @@
     border-radius: 5px;
     font-size: 1rem;
   }
+
+  .game-manager.embedded .game-form input {
+    border-color: var(--border-color);
+    background: var(--card-background);
+    color: var(--text-color);
+  }
   
   .game-form button {
     background-color: #1abc9c;
@@ -44,6 +70,14 @@
     border-radius: 5px;
     font-size: 1rem;
     cursor: pointer;
+  }
+
+  .game-manager.embedded .game-form button {
+    background-color: var(--primary-color);
+  }
+
+  .game-manager.embedded .game-form button:hover {
+    background-color: var(--primary-hover);
   }
   
   .game-form button:hover {
@@ -58,6 +92,11 @@
     padding: 20px;
     margin-top: 20px;
   }
+
+  .game-manager.embedded .game-list {
+    padding: 0;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
   
   .game-item {
     background-color: rgba(255, 255, 255, 0.1);
@@ -67,14 +106,28 @@
     text-align: center;
     font-size: 0.9rem;
   }
+
+  .game-manager.embedded .game-item {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px -8px var(--shadow-color);
+  }
   
   .game-item p {
     margin: 5px 0;
     color: #ecf0f1;
   }
+
+  .game-manager.embedded .game-item p {
+    color: var(--text-color);
+  }
   
   .game-item strong {
     color: #f39c12;
+  }
+
+  .game-manager.embedded .game-item strong {
+    color: var(--primary-color);
   }
   
   .game-item button {
@@ -90,4 +143,79 @@
   .game-item button:hover {
     background-color: #2980b9;
   }
-  
+
+  .game-form .cancel-button {
+    background-color: #95a5a6;
+    margin-top: 8px;
+  }
+
+  .game-form .cancel-button:hover {
+    background-color: #7f8c8d;
+  }
+
+  .game-manager.embedded .game-form .cancel-button,
+  .game-manager.embedded .game-form .cancel-button:hover {
+    background-color: #95a5a6;
+  }
+
+  .editing-notice {
+    margin: 0 0 10px;
+    font-weight: 600;
+    color: #f39c12;
+  }
+
+  .game-manager.embedded .editing-notice {
+    color: var(--primary-color);
+  }
+
+  .import-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+
+  .import-button {
+    padding: 10px 16px;
+    background-color: var(--primary-color, #0b3d91);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .import-button:hover:not(:disabled) {
+    background-color: var(--primary-hover, #0a357c);
+  }
+
+  .import-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .import-hint {
+    font-size: 12px;
+    color: var(--text-muted, #888);
+  }
+
+  .import-result {
+    background-color: #e8f0fe;
+    border: 1px solid #b3ccf5;
+    color: #0b3d91;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+
+  .import-result ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+  }
+
+  .import-result.error {
+    background-color: #fdecea;
+    border-color: #f5b7b1;
+    color: #b03a2e;
+  }

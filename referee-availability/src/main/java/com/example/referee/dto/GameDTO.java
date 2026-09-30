@@ -9,7 +9,10 @@ public class GameDTO {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String level;
+    private int gameLevel;
     private int requiredReferees;
+    private Integer numberOfGames;
+    private String type;
     private String status;
 
     // Getters and Setters
@@ -61,6 +64,14 @@ public class GameDTO {
         this.level = level;
     }
 
+    public int getGameLevel() {
+        return gameLevel;
+    }
+
+    public void setGameLevel(int gameLevel) {
+        this.gameLevel = gameLevel;
+    }
+
     public int getRequiredReferees() {
         return requiredReferees;
     }
@@ -75,5 +86,21 @@ public class GameDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getNumberOfGames() {
+        return numberOfGames;
+    }
+
+    public void setNumberOfGames(Integer numberOfGames) {
+        this.numberOfGames = numberOfGames;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 } 

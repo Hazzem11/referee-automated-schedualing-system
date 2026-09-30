@@ -1,0 +1,13 @@
+.dues-fees-page .dues-fees-table-wrap {
+  margin-top: 1rem;
+}
+
+.dues-fees-table .dues-fees-amount-col {
+  text-align: right;
+  white-space: nowrap;
+  width: 16rem;
+}
+
+.dues-fees-table th.dues-fees-amount-col {
+  text-align: right;
+}

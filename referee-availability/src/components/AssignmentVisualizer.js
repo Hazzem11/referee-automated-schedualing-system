@@ -2,13 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './AssignmentVisualizer.css';
 
-// Define helper functions for date operations without modifying native prototypes
-// Helper function to get week number
-const getWeekNumber = (date) => {
-    const onejan = new Date(date.getFullYear(), 0, 1);
-    return Math.ceil((((date - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-};
-
 // Helper function to add weeks
 const addWeeks = (date, weeks) => {
     const newDate = new Date(date.valueOf());
@@ -16,10 +9,16 @@ const addWeeks = (date, weeks) => {
     return newDate;
 };
 
-const AssignmentVisualizer = () => {
+const AssignmentVisualizer = ({
+    backHref = "/",
+    secondaryHref = "/referees",
+    secondaryLabel = "View Referees",
+}) => {
     const [solution, setSolution] = useState(null);
     const [loading, setLoading] = useState(false);
     const [currentWeek, setCurrentWeek] = useState(0); // 0 = current week, 1 = next week, etc.
+    const [publishing, setPublishing] = useState(false);
+    const [publishResult, setPublishResult] = useState(null);
     
     // Mock data for testing until backend is fully connected
     const mockSolution = {
@@ -139,6 +138,24 @@ const AssignmentVisualizer = () => {
         setLoading(false);
     };
 
+    const publish = async () => {
+        setPublishing(true);
+        setPublishResult(null);
+        try {
+            const response = await fetch('/api/assignments/publish', { method: 'POST' });
+            if (response.ok) {
+                setPublishResult(await response.json());
+            } else {
+                const text = await response.text();
+                setPublishResult({ error: text || 'Publish failed.' });
+            }
+        } catch (error) {
+            console.error('Error publishing:', error);
+            setPublishResult({ error: 'Publish failed — backend unreachable.' });
+        }
+        setPublishing(false);
+    };
+
     useEffect(() => {
         fetchSolution();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,10 +169,8 @@ const AssignmentVisualizer = () => {
         return <div className="no-solution">No solution available</div>;
     }
 
-    // Get the current week and week + n for comparison
     const currentDate = new Date();
-    const targetDate = addWeeks(currentDate, currentWeek);
-    
+
     // Filter assignments for the current view
     const filteredAssignments = solution.assignments.filter(assignment => {
         // Convert timestamp to Date if it's not already
@@ -164,11 +179,23 @@ const AssignmentVisualizer = () => {
         return gameWeek === currentWeek;
     });
 
+    // One row per game: slot 0 is the main referee, slot 1 the assistant
+    const groupedGames = Object.values(
+        filteredAssignments.reduce((acc, assignment) => {
+            const key = assignment.game.id;
+            if (!acc[key]) {
+                acc[key] = { game: assignment.game, referees: [] };
+            }
+            acc[key].referees.push(assignment.referee);
+            return acc;
+        }, {})
+    );
+
     return (
         <div className="assignment-visualizer">
             <div className="nav-bar">
-                <Link to="/" className="back-button">Back to Home</Link>
-                <Link to="/referees" className="nav-button">View Referees</Link>
+                <Link to={backHref} className="back-button">Back</Link>
+                <Link to={secondaryHref} className="nav-button">{secondaryLabel}</Link>
             </div>
 
             <div className="header">
@@ -195,8 +222,27 @@ const AssignmentVisualizer = () => {
                     <button onClick={solve} className="solve-button">
                         Re-optimize Assignments
                     </button>
+                    <button onClick={publish} className="publish-button" disabled={publishing}>
+                        {publishing ? "Publishing..." : "Publish Assignments"}
+                    </button>
                 </div>
             </div>
+
+            {publishResult && (
+                <div className={`publish-banner${publishResult.error ? " error" : ""}`}>
+                    {publishResult.error ? (
+                        publishResult.error
+                    ) : (
+                        <>
+                            <strong>Published.</strong>{" "}
+                            {publishResult.gamesFullyStaffed}/{publishResult.totalGames} games fully staffed ·{" "}
+                            {publishResult.newAssignments} new assignment{publishResult.newAssignments === 1 ? "" : "s"} ·{" "}
+                            {publishResult.refereesNotified} referee{publishResult.refereesNotified === 1 ? "" : "s"}{" "}
+                            {publishResult.live ? "emailed" : "notified (log-only mode — see backend console)"}
+                        </>
+                    )}
+                </div>
+            )}
 
             <div className="score-summary">
                 <h3>Solution Score</h3>
@@ -224,39 +270,39 @@ const AssignmentVisualizer = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredAssignments.length > 0 ? (
-                            filteredAssignments.map((assignment, index) => {
-                                const gameStartDate = new Date(assignment.game.startTime);
-                                const gameEndDate = new Date(assignment.game.endTime);
-                                const isAssigned = assignment.referee !== null;
-                                
+                        {groupedGames.length > 0 ? (
+                            groupedGames.map(({ game, referees }) => {
+                                const gameStartDate = new Date(game.startTime);
+                                const gameEndDate = new Date(game.endTime);
+                                const main = referees[0] || null;
+                                const assistant = referees[1] || null;
+                                const openSlots = referees.filter(r => r === null).length;
+                                const isAssigned = openSlots === 0 && referees.length > 0;
+
+                                const refereeCell = (referee) => referee ? (
+                                    <div className="referee-info">
+                                        <div>{referee.name}</div>
+                                        <div className="referee-details">
+                                            Exp: {referee.experienceLevel}
+                                        </div>
+                                    </div>
+                                ) : "Unassigned";
+
                                 return (
-                                    <tr key={index} className={isAssigned ? "assigned" : "unassigned"}>
-                                        <td>{assignment.game.name}</td>
-                                        <td>{assignment.game.gameLevel}</td>
+                                    <tr key={game.id} className={isAssigned ? "assigned" : "unassigned"}>
+                                        <td>{game.name}</td>
+                                        <td>{game.gameLevel}</td>
                                         <td>
                                             {gameStartDate.toLocaleDateString()} <br />
-                                            {gameStartDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
+                                            {gameStartDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} -
                                             {gameEndDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                                         </td>
-                                        <td>{assignment.game.location}</td>
-                                        <td>
-                                            {isAssigned ? (
-                                                <div className="referee-info">
-                                                    <div>{assignment.referee.name}</div>
-                                                    <div className="referee-details">
-                                                        Exp: {assignment.referee.experienceLevel}
-                                                    </div>
-                                                </div>
-                                            ) : "Unassigned"}
-                                        </td>
-                                        <td>
-                                            {/* This would be filled with assistant referee info in a full implementation */}
-                                            Unassigned
-                                        </td>
+                                        <td>{game.location}</td>
+                                        <td>{refereeCell(main)}</td>
+                                        <td>{refereeCell(assistant)}</td>
                                         <td>
                                             <span className={`status-badge ${isAssigned ? "status-assigned" : "status-unassigned"}`}>
-                                                {isAssigned ? "Assigned" : "Needs Referee"}
+                                                {isAssigned ? "Assigned" : `Needs ${openSlots} Referee${openSlots === 1 ? "" : "s"}`}
                                             </span>
                                         </td>
                                     </tr>

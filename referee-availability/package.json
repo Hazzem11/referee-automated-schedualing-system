@@ -2,15 +2,10 @@
   "name": "referee-availability",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
-    "@faker-js/faker": "^9.4.0",
     "axios": "^1.7.9",
-    "body-parser": "^1.20.3",
-    "cors": "^2.8.5",
     "cra-template": "1.2.0",
-    "express": "^4.21.2",
-    "firebase": "^11.1.0",
-    "firebase-admin": "^13.0.2",
     "react": "^19.0.0",
     "react-day-picker": "^9.4.4",
     "react-dom": "^19.0.0",
@@ -19,13 +14,16 @@
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@faker-js/faker": "^9.4.0",
+    "firebase-admin": "^13.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "populate-firestore": "node populateData.js"
   },
   "eslintConfig": {
     "extends": [

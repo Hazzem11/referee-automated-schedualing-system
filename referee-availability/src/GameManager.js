@@ -1,35 +1,86 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./GameManager.css";
-import { db } from "./db";
-import { collection, addDoc, getDocs, updateDoc, doc } from "firebase/firestore";
+import api from "./api";
+import PlaceAutocomplete from "./components/PlaceAutocomplete";
 
-const GameManager = () => {
-  const [gameData, setGameData] = useState({
-    date: "",
-    time: "",
-    location: "",
-    numberOfGames: "",
-    level: "",
-    type: "",
-  });
+const EMPTY_FORM = {
+  date: "",
+  time: "",
+  location: "",
+  locationPlaceId: "",
+  locationLat: null,
+  locationLng: null,
+  numberOfGames: "",
+  level: "",
+  type: "",
+  requiredReferees: 3,
+};
+
+const GameManager = ({ embedded = false }) => {
+  const [gameData, setGameData] = useState(EMPTY_FORM);
   const [games, setGames] = useState([]);
-  const gamesCollectionRef = collection(db, "games");
+  const [editingId, setEditingId] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const fileInputRef = useRef(null);
 
-  // Fetch games from Firestore
+  const handleImportFile = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const text = await file.text();
+      const { data } = await api.post("/api/games/import", text, {
+        headers: { "Content-Type": "text/plain" },
+      });
+      setImportResult(data);
+      fetchGames();
+    } catch (error) {
+      console.error("Error importing games:", error);
+      setImportResult({ imported: 0, skipped: 0, errors: ["Import failed — backend unreachable."] });
+    }
+    setImporting(false);
+    e.target.value = "";
+  };
+
+  const fetchGames = async () => {
+    try {
+      const { data } = await api.get("/api/games");
+      setGames(data);
+    } catch (error) {
+      console.error("Error loading games:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchGames = async () => {
-      const querySnapshot = await getDocs(gamesCollectionRef);
-      const gamesList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setGames(gamesList);
-    };
-
     fetchGames();
   }, []);
 
-  // Handle form submission
+  const startEdit = (game) => {
+    const start = new Date(game.startTime);
+    const pad = (n) => String(n).padStart(2, "0");
+    setGameData({
+      date: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}`,
+      time: `${pad(start.getHours())}:${pad(start.getMinutes())}`,
+      location: game.location || "",
+      locationPlaceId: "",
+      locationLat: null,
+      locationLng: null,
+      numberOfGames: game.numberOfGames ?? 1,
+      level: String(game.gameLevel ?? ""),
+      type: game.type || "",
+      requiredReferees: game.requiredReferees ?? 3,
+    });
+    setEditingId(game.id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setGameData(EMPTY_FORM);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -44,52 +95,48 @@ const GameManager = () => {
       return;
     }
 
+    const payload = {
+      date: gameData.date,
+      time: gameData.time,
+      location: gameData.location,
+      locationPlaceId: gameData.locationPlaceId,
+      locationLat: gameData.locationLat,
+      locationLng: gameData.locationLng,
+      numberOfGames: Number(gameData.numberOfGames),
+      gameLevel: Number(gameData.level),
+      level: "",
+      type: gameData.type,
+      requiredReferees: Number(gameData.requiredReferees) || 3,
+    };
+
     try {
-      await addDoc(gamesCollectionRef, {
-        ...gameData,
-        assigned: false,
-        crewChief: "",
-        umpire1: "",
-        umpire2: "",
-        confirmed: {
-          crewChief: false,
-          umpire1: false,
-          umpire2: false,
-        },
-      });
-      alert("Game added successfully!");
-      setGameData({ date: "", time: "", location: "", numberOfGames: "", type: "", level: "" });
-      // Refresh games list
-      const querySnapshot = await getDocs(gamesCollectionRef);
-      const gamesList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setGames(gamesList);
+      if (editingId) {
+        await api.put(`/api/games/${editingId}`, payload);
+        alert("Game updated — assigned referees will be notified of any venue/time change.");
+      } else {
+        await api.post("/api/games", payload);
+        alert("Game added successfully!");
+      }
+      setEditingId(null);
+      setGameData(EMPTY_FORM);
+      fetchGames();
     } catch (error) {
-      console.error("Error adding game:", error);
-      alert("Failed to add game.");
+      console.error("Error saving game:", error);
+      alert(editingId ? "Failed to update game." : "Failed to add game.");
     }
   };
 
-  // Toggle assigned flag
-  const toggleAssigned = async (id, currentStatus) => {
-    try {
-      const gameDoc = doc(db, "games", id);
-      await updateDoc(gameDoc, { assigned: !currentStatus });
-      setGames((prev) =>
-        prev.map((game) => (game.id === id ? { ...game, assigned: !currentStatus } : game))
-      );
-    } catch (error) {
-      console.error("Error updating game:", error);
-      alert("Failed to update game.");
-    }
+  const formatDateTime = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleString();
   };
 
   return (
-    <div className="game-manager">
+    <div className={`game-manager${embedded ? " embedded" : ""}`}>
       <h1>Game Manager</h1>
       <form onSubmit={handleSubmit} className="game-form">
+        {editingId && <p className="editing-notice">Editing game #{editingId}</p>}
         <label>
           Date:
           <input
@@ -108,10 +155,27 @@ const GameManager = () => {
         </label>
         <label>
           Location:
-          <input
-            type="text"
+          <PlaceAutocomplete
             value={gameData.location}
-            onChange={(e) => setGameData({ ...gameData, location: e.target.value })}
+            onChange={(location) =>
+              setGameData({
+                ...gameData,
+                location,
+                locationPlaceId: "",
+                locationLat: null,
+                locationLng: null,
+              })
+            }
+            onPick={({ label, placeId, lat, lng }) =>
+              setGameData({
+                ...gameData,
+                location: label,
+                locationPlaceId: placeId,
+                locationLat: lat ?? null,
+                locationLng: lng ?? null,
+              })
+            }
+            placeholder="Start typing an address or venue..."
           />
         </label>
         <label>
@@ -123,7 +187,7 @@ const GameManager = () => {
           />
         </label>
         <label>
-          Game Level (Levels 1-6 with 1 being highest):
+          Match difficulty (1–6; higher = tougher; referee experience must be ≥ this):
           <input
             type="number"
             value={gameData.level}
@@ -138,31 +202,70 @@ const GameManager = () => {
             onChange={(e) => setGameData({ ...gameData, type: e.target.value })}
           />
         </label>
-        <button type="submit">Add Game</button>
+        <button type="submit">{editingId ? "Update Game" : "Add Game"}</button>
+        {editingId && (
+          <button type="button" className="cancel-button" onClick={cancelEdit}>
+            Cancel
+          </button>
+        )}
       </form>
 
       <h2>Existing Games</h2>
+
+      <div className="import-row">
+        <button
+          type="button"
+          className="import-button"
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+          disabled={importing}
+        >
+          {importing ? "Importing..." : "Import Schedule (CSV)"}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          style={{ display: "none" }}
+          onChange={handleImportFile}
+        />
+        <span className="import-hint">
+          Columns: date (YYYY-MM-DD), time (HH:MM), location, gameLevel (1–6), type, numberOfGames, requiredReferees
+        </span>
+      </div>
+
+      {importResult && (
+        <div className={`import-result${importResult.imported === 0 && importResult.errors.length > 0 ? " error" : ""}`}>
+          <strong>{importResult.imported} imported</strong>
+          {importResult.skipped > 0 && <>, {importResult.skipped} skipped</>}
+          {importResult.errors.length > 0 && (
+            <ul>
+              {importResult.errors.slice(0, 5).map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+              {importResult.errors.length > 5 && <li>…and {importResult.errors.length - 5} more</li>}
+            </ul>
+          )}
+        </div>
+      )}
+
       <ul className="game-list">
         {games.map((game) => (
           <li key={game.id} className="game-item">
             <p>
-              <strong>{game.date}</strong> at <strong>{game.time}</strong>
+              <strong>{formatDateTime(game.startTime)}</strong>
             </p>
             <p>{game.location}</p>
-            <p>Number of Games: <strong>{game.numberOfGames}</strong></p>
-            <p>Type: <strong>{game.type}</strong></p>
-            <p>Assigned: <strong>{game.assigned ? "Yes" : "No"}</strong></p>
             <p>
-              Crew Chief: <strong>{game.crewChief || "Unassigned"}</strong>{" "}
-              ({game.confirmed.crewChief ? "Confirmed" : "Not Confirmed"})
+              Number of Games: <strong>{game.numberOfGames ?? "—"}</strong>
             </p>
             <p>
-              Umpire 1: <strong>{game.umpire1 || "Unassigned"}</strong>{" "}
-              ({game.confirmed.umpire1 ? "Confirmed" : "Not Confirmed"})
+              Level: <strong>{game.gameLevel}</strong> — Type: <strong>{game.type ?? "—"}</strong>
             </p>
-            
-            <button onClick={() => toggleAssigned(game.id, game.assigned)}>
-              {game.assigned ? "Unassign" : "Assign"}
+            <p>
+              Status: <strong>{game.status}</strong>
+            </p>
+            <button type="button" className="edit-button" onClick={() => startEdit(game)}>
+              Edit
             </button>
           </li>
         ))}

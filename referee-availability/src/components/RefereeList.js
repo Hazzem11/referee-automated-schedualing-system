@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './RefereeList.css';
 
-const RefereeList = () => {
-    const [referees, setReferees] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    // Mock referee data for testing
-    const mockReferees = [
+const mockReferees = [
         {
             id: 1,
             name: "John Smith",
@@ -58,32 +53,64 @@ const RefereeList = () => {
             maxGamesPerWeek: 2,
             currentAssignments: 1
         }
-    ];
+];
 
-    useEffect(() => {
-        // Attempt to fetch referees from the API
-        const fetchReferees = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch('/api/referees');
-                if (response.ok) {
-                    const data = await response.json();
-                    setReferees(data);
-                } else {
-                    // Use mock data if API fails
-                    console.log("Using mock referee data");
-                    setReferees(mockReferees);
-                }
-            } catch (error) {
-                console.error('Error fetching referees:', error);
+const RefereeList = ({
+    backHref = "/",
+    secondaryHref = "/assignments",
+    secondaryLabel = "View Assignments",
+}) => {
+    const [referees, setReferees] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [importing, setImporting] = useState(false);
+    const [importResult, setImportResult] = useState(null);
+    const fileInputRef = useRef(null);
+
+    const fetchReferees = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/referees');
+            if (response.ok) {
+                const data = await response.json();
+                setReferees(data);
+            } else {
                 // Use mock data if API fails
+                console.log("Using mock referee data");
                 setReferees(mockReferees);
             }
-            setLoading(false);
-        };
+        } catch (error) {
+            console.error('Error fetching referees:', error);
+            // Use mock data if API fails
+            setReferees(mockReferees);
+        }
+        setLoading(false);
+    };
 
+    useEffect(() => {
         fetchReferees();
-    }, [mockReferees]);
+    }, []);
+
+    const handleImportFile = async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        setImporting(true);
+        setImportResult(null);
+        try {
+            const text = await file.text();
+            const response = await fetch('/api/referees/import', { method: 'POST', body: text });
+            if (response.ok) {
+                setImportResult(await response.json());
+                fetchReferees();
+            } else {
+                setImportResult({ imported: 0, skipped: 0, errors: ['Import failed — server error.'] });
+            }
+        } catch (error) {
+            console.error('Error importing referees:', error);
+            setImportResult({ imported: 0, skipped: 0, errors: ['Import failed — backend unreachable.'] });
+        }
+        setImporting(false);
+        e.target.value = '';
+    };
 
     if (loading) {
         return <div className="loading">Loading referees...</div>;
@@ -92,12 +119,46 @@ const RefereeList = () => {
     return (
         <div className="referee-list-container">
             <div className="nav-bar">
-                <Link to="/" className="back-button">Back to Home</Link>
-                <Link to="/assignments" className="nav-button">View Assignments</Link>
+                <Link to={backHref} className="back-button">Back</Link>
+                <Link to={secondaryHref} className="nav-button">{secondaryLabel}</Link>
             </div>
 
             <h2>Referee Roster</h2>
-            
+
+            <div className="import-row">
+                <button
+                    type="button"
+                    className="import-button"
+                    onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                    disabled={importing}
+                >
+                    {importing ? "Importing..." : "Import Referees (CSV)"}
+                </button>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv,text/csv"
+                    style={{ display: 'none' }}
+                    onChange={handleImportFile}
+                />
+                <span className="import-hint">
+                    Columns: name, email, experienceLevel, homeLocation, maxTravelDistance, preferredLocations, maxGamesPerWeek
+                </span>
+            </div>
+
+            {importResult && (
+                <div className={`import-result${importResult.imported === 0 && importResult.errors.length > 0 ? ' error' : ''}`}>
+                    <strong>{importResult.imported} imported</strong>
+                    {importResult.skipped > 0 && <>, {importResult.skipped} skipped</>}
+                    {importResult.errors.length > 0 && (
+                        <ul>
+                            {importResult.errors.slice(0, 5).map((err, i) => <li key={i}>{err}</li>)}
+                            {importResult.errors.length > 5 && <li>…and {importResult.errors.length - 5} more</li>}
+                        </ul>
+                    )}
+                </div>
+            )}
+
             <div className="stats-summary">
                 <div className="stat-card">
                     <span className="stat-number">{referees.length}</span>

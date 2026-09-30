@@ -1,28 +1,21 @@
 package com.example.referee.domain;
 
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
-
 import java.time.LocalDateTime;
 
-@PlanningEntity
+/**
+ * Problem fact: a match that needs referees.
+ */
 public class Game {
+
     private Long id;
     private String name;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String location;
     private int requiredReferees;
-    private int gameLevel; // Higher number = more important game
-    
-    @PlanningVariable(valueRangeProviderRefs = {"refereeRange"})
-    private Referee mainReferee;
-    
-    @PlanningVariable(valueRangeProviderRefs = {"refereeRange"})
-    private Referee assistantReferee1;
-    
-    @PlanningVariable(valueRangeProviderRefs = {"refereeRange"})
-    private Referee assistantReferee2;
+    private int gameLevel;
+    private Double locationLat;
+    private Double locationLng;
 
     public Game() {
     }
@@ -35,7 +28,6 @@ public class Game {
         this.requiredReferees = requiredReferees;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -76,6 +68,22 @@ public class Game {
         this.location = location;
     }
 
+    public Double getLocationLat() {
+        return locationLat;
+    }
+
+    public void setLocationLat(Double locationLat) {
+        this.locationLat = locationLat;
+    }
+
+    public Double getLocationLng() {
+        return locationLng;
+    }
+
+    public void setLocationLng(Double locationLng) {
+        this.locationLng = locationLng;
+    }
+
     public int getRequiredReferees() {
         return requiredReferees;
     }
@@ -91,28 +99,4 @@ public class Game {
     public void setGameLevel(int gameLevel) {
         this.gameLevel = gameLevel;
     }
-
-    public Referee getMainReferee() {
-        return mainReferee;
-    }
-
-    public void setMainReferee(Referee mainReferee) {
-        this.mainReferee = mainReferee;
-    }
-
-    public Referee getAssistantReferee1() {
-        return assistantReferee1;
-    }
-
-    public void setAssistantReferee1(Referee assistantReferee1) {
-        this.assistantReferee1 = assistantReferee1;
-    }
-
-    public Referee getAssistantReferee2() {
-        return assistantReferee2;
-    }
-
-    public void setAssistantReferee2(Referee assistantReferee2) {
-        this.assistantReferee2 = assistantReferee2;
-    }
-} 
+}

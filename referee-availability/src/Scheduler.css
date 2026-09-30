@@ -1,124 +1,289 @@
 /* General Page Styles */
 .scheduler-page {
-    padding: 20px;
-    background: linear-gradient(to bottom right, #2c3e50, #4ca1af);
-    min-height: 100vh;
-    color: #ecf0f1;
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .scheduler-page h1 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-  
-  /* Form Styles */
-  .form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .form-group label {
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  
-  .form-group input {
-    padding: 10px;
-    width: 50%;
-    max-width: 400px;
-    box-sizing: border-box;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-  
-  /* Scheduler Container Styles */
-  .scheduler-container {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .week-container {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .week-container h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  
-  /* Schedule Grid Styles */
-  .scheduler {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .day-column {
-    flex: 1;
-    min-width: 150px;
-    background-color: rgba(52, 73, 94, 0.8);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
-  .day-column h3 {
-    background-color: #34495e;
-    color: white;
-    text-align: center;
-    margin: 0;
-    padding: 10px;
-    font-size: 1rem;
-  }
-  
-  /* Hour Slot Styles */
-  .hour-slot {
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-  }
-  
-  .hour-slot:hover {
-    background-color: #3498db;
-    color: white;
-    border-color: #3498db;
-  }
-  
-  .hour-slot.selected {
-    background-color: #8bc34a;
-    color: white;
-    border-color: #8bc34a;
-  }
-  
-  /* Submit Button Styles */
-  button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #2980b9;
-  }
-  
+  padding: 20px;
+  background: linear-gradient(to bottom right, #2c3e50, #4ca1af);
+  min-height: 100vh;
+  color: #ecf0f1;
+  font-family: "Roboto", sans-serif;
+}
+
+.scheduler-page.embedded {
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+  color: var(--text-color);
+  font-family: inherit;
+}
+
+.scheduler-page h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.scheduler-page.embedded h1 {
+  text-align: left;
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group-inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.form-group-inline label {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.form-group input {
+  padding: 10px;
+  width: 50%;
+  max-width: 400px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.scheduler-page.embedded .form-group input {
+  width: 100%;
+  max-width: 280px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9rem;
+  background: var(--card-background);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+/* Week tabs */
+.week-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.week-tab {
+  margin-top: 0;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.scheduler-page.embedded .week-tab {
+  border-color: var(--border-color);
+  background: var(--card-background);
+  color: var(--text-color);
+}
+
+.week-tab:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.scheduler-page.embedded .week-tab:hover {
+  background: color-mix(in srgb, var(--primary-color) 8%, var(--card-background));
+}
+
+.week-tab.active {
+  background-color: #3498db;
+  border-color: #3498db;
+  color: #fff;
+}
+
+.scheduler-page.embedded .week-tab.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Scheduler Container Styles */
+.scheduler-container {
+  margin-top: 0;
+}
+
+.week-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scheduler-page.embedded .week-container {
+  padding: 0.75rem;
+  background: var(--card-background);
+  border-color: var(--border-color);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 260px);
+  min-height: 0;
+}
+
+.week-container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.scheduler-page.embedded .week-container h2 {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Schedule Grid Styles */
+.scheduler {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.scheduler-page.embedded .scheduler {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.day-column {
+  min-width: 0;
+  background-color: rgba(52, 73, 94, 0.8);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.scheduler-page.embedded .day-column {
+  background: color-mix(in srgb, var(--primary-color) 6%, var(--card-background));
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.day-column h3 {
+  background-color: #34495e;
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 10px;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.scheduler-page.embedded .day-column h3 {
+  background: color-mix(in srgb, var(--primary-color) 14%, var(--card-background));
+  color: var(--text-color);
+  padding: 0.35rem 0.25rem;
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.hour-slots {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Hour Slot Styles */
+.hour-slot {
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease;
+  font-size: 0.9rem;
+}
+
+.scheduler-page.embedded .hour-slot {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.15rem;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  border-color: var(--border-color);
+  background: var(--card-background);
+  color: var(--text-color);
+}
+
+.hour-slot:hover {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.scheduler-page.embedded .hour-slot:hover {
+  background: color-mix(in srgb, var(--primary-color) 18%, var(--card-background));
+  color: var(--text-color);
+  border-color: color-mix(in srgb, var(--primary-color) 35%, var(--border-color));
+}
+
+.hour-slot.selected {
+  background-color: #8bc34a;
+  color: white;
+  border-color: #8bc34a;
+}
+
+.scheduler-page.embedded .hour-slot.selected {
+  background: color-mix(in srgb, #8bc34a 35%, var(--card-background));
+  color: var(--text-color);
+  border-color: #8bc34a;
+}
+
+/* Submit Button Styles */
+.week-container > button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.scheduler-page.embedded .week-container > button {
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  background-color: var(--primary-color);
+}
+
+.week-container > button:hover {
+  background-color: #2980b9;
+}
+
+.scheduler-page.embedded .week-container > button:hover {
+  filter: brightness(1.05);
+}

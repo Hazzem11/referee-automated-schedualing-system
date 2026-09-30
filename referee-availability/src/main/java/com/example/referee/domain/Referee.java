@@ -1,21 +1,22 @@
 package com.example.referee.domain;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity
+/**
+ * Planning domain referee (not a JPA entity).
+ */
 public class Referee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-    
     private String name;
     private String email;
     private String phone;
-    private int experienceLevel; // Higher number = more experienced
+    private int experienceLevel;
     private String homeLocation;
-    private int maxTravelDistance; // in kilometers
+    private int maxTravelDistance;
+    private Double homeLat;
+    private Double homeLng;
     private String status;
     private List<TimeSlot> availability;
     private List<String> preferredLocations;
@@ -31,7 +32,6 @@ public class Referee {
         this.homeLocation = homeLocation;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -88,6 +88,22 @@ public class Referee {
         this.maxTravelDistance = maxTravelDistance;
     }
 
+    public Double getHomeLat() {
+        return homeLat;
+    }
+
+    public void setHomeLat(Double homeLat) {
+        this.homeLat = homeLat;
+    }
+
+    public Double getHomeLng() {
+        return homeLng;
+    }
+
+    public void setHomeLng(Double homeLng) {
+        this.homeLng = homeLng;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -133,13 +149,12 @@ public class Referee {
             return false;
         }
         return availability.stream()
-            .anyMatch(slot -> slot.isAvailable() && 
-                            !slot.getStartTime().isAfter(startTime) && 
-                            !slot.getEndTime().isBefore(endTime));
+            .anyMatch(slot -> slot.isAvailable()
+                && !slot.getStartTime().isAfter(startTime)
+                && !slot.getEndTime().isBefore(endTime));
     }
 
     public boolean canTravelTo(String location) {
-        // This would need to be implemented with actual distance calculation
-        return true; // Placeholder
+        return true;
     }
-} 
+}

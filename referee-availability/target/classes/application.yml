@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: referee-availability
+  datasource:
+    url: jdbc:h2:mem:referee;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  mail:
+    # SendGrid SMTP relay — username is literally "apikey", password is the API key.
+    # Leave SENDGRID_API_KEY unset to run in log-only mode (emails printed to console).
+    host: smtp.sendgrid.net
+    port: 587
+    username: apikey
+    password: ${SENDGRID_API_KEY:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  notifications:
+    # Master switch: real emails only when true AND SENDGRID_API_KEY is set.
+    enabled: ${NOTIFICATIONS_ENABLED:false}
+    from: ${NOTIFICATIONS_FROM:assignments@demo.ovbabo.ca}
+    from-name: ${NOTIFICATIONS_FROM_NAME:OVBABO Assignments}
+    # Comma-separated assigner inbox(es) for the publish digest.
+    assigner-emails: ${ASSIGNER_EMAILS:}
+
+spring.jackson:
+  serialization:
+    write-dates-as-timestamps: false
+  deserialization:
+    adjust-dates-to-context-time-zone: false
+
+logging:
+  level:
+    com.example.referee: INFO
