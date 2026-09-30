@@ -74,10 +74,10 @@ const UpdatesPage = () => {
       totalSlots += todaysSlots.length;
     }
     const totalRefs = list.length;
-    const refsNeeded = todaysGames.reduce((sum, g) => sum + (g?.requiredReferees ?? 2), 0);
-    const pct = refsNeeded === 0 ? null : Math.round((availableRefs / refsNeeded) * 100);
-    const band = pct == null ? "none" : pct < 50 ? "low" : pct < 100 ? "mid" : "high";
-    return { availableRefs, totalSlots, totalRefs, refsNeeded, pct, band };
+    const gamesToday = todaysGames.length;
+    const pct = gamesToday === 0 ? null : Math.round((availableRefs / (2 * gamesToday)) * 100);
+    const band = pct == null ? "none" : pct > 100 ? "high" : pct >= 50 ? "mid" : "low";
+    return { availableRefs, totalSlots, totalRefs, gamesToday, pct, band };
   }, [referees, todaysGames, today]);
 
   return (
@@ -122,7 +122,7 @@ const UpdatesPage = () => {
             ) : (
               <span
                 className={`availability-indicator availability-${availabilitySummary.band}`}
-                title={`${availabilitySummary.availableRefs} refs available · ${availabilitySummary.refsNeeded} slots needed today`}
+                title={`${availabilitySummary.availableRefs} refs available · ${availabilitySummary.gamesToday} games today (healthy target: ${2 * availabilitySummary.gamesToday}+ refs)`}
               >
                 <span className="availability-dot" aria-hidden="true" />
                 {availabilitySummary.pct}%
