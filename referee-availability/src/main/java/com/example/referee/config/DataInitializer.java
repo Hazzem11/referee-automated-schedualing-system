@@ -1,13 +1,18 @@
 package com.example.referee.config;
 
 import com.example.referee.dto.TimeSlotDTO;
+import com.example.referee.model.AppUser;
 import com.example.referee.model.Game;
 import com.example.referee.model.Referee;
+import com.example.referee.model.Role;
+import com.example.referee.repository.AppUserRepository;
 import com.example.referee.repository.GameRepository;
 import com.example.referee.repository.RefereeRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
@@ -27,7 +32,9 @@ import java.util.Set;
  * locations directory, member names that match the frontend demo data, and
  * realistic availability/travel variety so the solver visibly makes trade-offs.
  * Coordinates are approximate; edit names/venues here before the demo.
+ * Runs only under the "demo" profile — production starts with an empty database.
  */
+@Profile("demo")
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -85,14 +92,20 @@ public class DataInitializer implements CommandLineRunner {
 
     private final GameRepository gameRepository;
     private final RefereeRepository refereeRepository;
+    private final AppUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
 
     public DataInitializer(
             GameRepository gameRepository,
             RefereeRepository refereeRepository,
+            AppUserRepository userRepository,
+            PasswordEncoder passwordEncoder,
             ObjectMapper objectMapper) {
         this.gameRepository = gameRepository;
         this.refereeRepository = refereeRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
         this.objectMapper = objectMapper;
     }
 
@@ -103,8 +116,28 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         LocalDate today = LocalDate.now();
-        refereeRepository.saveAll(buildReferees(today));
+        List<Referee> referees = refereeRepository.saveAll(buildReferees(today));
         gameRepository.saveAll(buildGames(today));
+        seedUsers(referees);
+    }
+
+    /** Demo logins (password "demo1234"); the referee account links to a seeded referee. */
+    private void seedUsers(List<Referee> referees) {
+        createUser("Admin Demo", "admin@ovbabo.demo", Role.ADMIN, null);
+        createUser("Assigner Demo", "assigner@ovbabo.demo", Role.GAME_ASSIGNER, null);
+        createUser("Coach Demo", "coach@ovbabo.demo", Role.REFEREE_COACH, null);
+        Long refereeId = referees.isEmpty() ? null : referees.get(0).getId();
+        createUser("Referee Demo", "referee@ovbabo.demo", Role.REFEREE, refereeId);
+    }
+
+    private void createUser(String name, String email, Role role, Long refereeId) {
+        AppUser user = new AppUser();
+        user.setName(name);
+        user.setEmail(email);
+        user.setRole(role);
+        user.setRefereeId(refereeId);
+        user.setPasswordHash(passwordEncoder.encode("demo1234"));
+        userRepository.save(user);
     }
 
     private List<Referee> buildReferees(LocalDate today) throws JsonProcessingException {

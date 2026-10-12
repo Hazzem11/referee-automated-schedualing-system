@@ -123,6 +123,25 @@ public class NotificationService {
         }
     }
 
+    /** Invite a new account holder: links them to the set-password page. */
+    public void sendInviteEmail(String to, String name, String inviteUrl, com.example.referee.model.Role role) {
+        String roleLabel;
+        switch (role) {
+            case ADMIN: roleLabel = "Admin"; break;
+            case GAME_ASSIGNER: roleLabel = "Game assigner"; break;
+            case REFEREE_COACH: roleLabel = "Referee coach"; break;
+            default: roleLabel = "Referee";
+        }
+        String html = page("You're invited to the OVBABO members' site",
+            "<p>Hi " + escape(firstName(name)) + ",</p>"
+                + "<p>An account has been created for you with the role <strong>" + roleLabel + "</strong>.</p>"
+                + "<p><a href=\"" + escape(inviteUrl) + "\" style=\"display:inline-block;background:#0b3d91;color:#fff;"
+                + "padding:10px 18px;border-radius:6px;text-decoration:none;\">Set your password</a></p>"
+                + "<p style=\"color:#555;font-size:13px;\">This link expires in 7 days. If it has expired, "
+                + "ask your assigner to resend the invite.</p>");
+        deliver(to, "You're invited — set your OVBABO account password", html);
+    }
+
     private void deliver(String to, String subject, String html) {
         JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
         if (!isLive() || mailSender == null) {

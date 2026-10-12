@@ -1,25 +1,26 @@
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        same-site: lax
 
 spring:
   application:
     name: referee-availability
   datasource:
-    url: jdbc:h2:mem:referee;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/referee}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
         format_sql: false
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  flyway:
+    enabled: true
   mail:
     # SendGrid SMTP relay — username is literally "apikey", password is the API key.
     # Leave SENDGRID_API_KEY unset to run in log-only mode (emails printed to console).
@@ -35,6 +36,10 @@ spring:
             enable: true
 
 app:
+  # Public base URL used in invite emails (no trailing slash).
+  base-url: ${APP_BASE_URL:http://localhost:3000}
+  # Demo profile exposes demo credentials on the login page and seeds demo users.
+  demo: false
   notifications:
     # Master switch: real emails only when true AND SENDGRID_API_KEY is set.
     enabled: ${NOTIFICATIONS_ENABLED:false}
