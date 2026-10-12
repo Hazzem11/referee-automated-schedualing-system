@@ -23,6 +23,8 @@ import ReportFormPage from "./board/pages/ReportFormPage";
 import MemberDirectoryPage from "./board/pages/MemberDirectoryPage";
 import { MEMBERS, REFEREE_COACHES } from "./board/data/membersData";
 import LoginPage from "./pages/LoginPage";
+import AcceptInvitePage from "./pages/AcceptInvitePage";
+import UsersPage from "./board/pages/UsersPage";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/AuthContext";
 import { RequireAuth } from "./auth/RequireAuth";
@@ -148,6 +150,7 @@ const Home = () => {
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<LoginPage />} />
+    <Route path="/accept-invite" element={<AcceptInvitePage />} />
     <Route path="/" element={<RootRedirect />} />
 
     <Route path="/legacy" element={<Home />} />
@@ -311,10 +314,10 @@ const AppRoutes = () => (
           }
         />
         <Route
-          path="logout"
+          path="users"
           element={
-            <RequireRole allow={[DEMO_ROLES.ADMIN]}>
-              <SectionPlaceholderPage title="Logout" subtitle="Demo logout entry point (auth flow to be wired)." />
+            <RequireRole allow={[DEMO_ROLES.GAME_ASSIGNER]}>
+              <UsersPage />
             </RequireRole>
           }
         />

@@ -592,3 +592,62 @@
 .availability-high {
   color: #1e8449;
 }
+
+.users-invite-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  align-items: center;
+}
+
+.users-button {
+  padding: 10px 16px;
+  background-color: var(--primary-color, #0b3d91);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.users-button:hover:not(:disabled) {
+  background-color: var(--primary-hover, #0a357c);
+}
+
+.users-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.users-link-button {
+  background: none;
+  border: none;
+  color: var(--primary-color, #0b3d91);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 6px;
+}
+
+.users-link-button:hover {
+  text-decoration: underline;
+}
+
+.users-link-button.danger {
+  color: #c0392b;
+}
+
+.users-notice {
+  color: #1e8449;
+  font-weight: 600;
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+.users-error {
+  color: #c0392b;
+  font-weight: 600;
+  font-size: 13px;
+  margin: 10px 0 0;
+}

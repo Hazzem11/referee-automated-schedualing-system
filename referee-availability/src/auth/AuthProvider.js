@@ -1,32 +1,54 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { clearStoredRole, getStoredRole, setStoredRole } from "./authStore";
+import api from "../api";
 
 export function AuthProvider({ children }) {
-  const [role, setRoleState] = useState(() => getStoredRole());
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const setRole = useCallback((next) => {
-    setRoleState(next);
-    if (next) {
-      setStoredRole(next);
-    } else {
-      clearStoredRole();
-    }
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get("/api/auth/me")
+      .then(({ data }) => {
+        if (!cancelled) setUser(data);
+      })
+      .catch(() => {
+        if (!cancelled) setUser(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const logout = useCallback(() => {
-    clearStoredRole();
-    setRoleState(null);
+  const login = useCallback(async (email, password) => {
+    const { data } = await api.post("/api/auth/login", { email, password });
+    setUser(data);
+    return data;
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch {
+      // Session may already be gone — local state clears regardless.
+    }
+    setUser(null);
   }, []);
 
   const value = useMemo(
     () => ({
-      role,
-      setRole,
+      user,
+      role: user?.role ?? null,
+      isAuthenticated: Boolean(user),
+      loading,
+      login,
       logout,
-      isAuthenticated: Boolean(role),
     }),
-    [role, setRole, logout]
+    [user, loading, login, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

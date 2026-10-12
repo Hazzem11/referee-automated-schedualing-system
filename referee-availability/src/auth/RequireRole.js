@@ -7,8 +7,11 @@ import { DEMO_ROLES, roleMatches } from "./roles";
  * @param {string[]} allow - role ids that may access this route. Empty = any authenticated user.
  */
 export function RequireRole({ allow = [], children }) {
-  const { role, isAuthenticated } = useAuth();
+  const { role, isAuthenticated, loading } = useAuth();
 
+  if (loading) {
+    return null;
+  }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

@@ -94,7 +94,11 @@ const NAV_DEFINITION = [
         label: "Referees",
         roles: [DEMO_ROLES.ADMIN, DEMO_ROLES.GAME_ASSIGNER],
       },
-      { to: "/board/admin/logout", label: "Logout", roles: [DEMO_ROLES.ADMIN] },
+      {
+        to: "/board/admin/users",
+        label: "Accounts",
+        roles: [DEMO_ROLES.ADMIN, DEMO_ROLES.GAME_ASSIGNER],
+      },
     ],
   },
 ];
@@ -152,7 +156,7 @@ const UserIcon = () => (
 
 const BoardLayout = () => {
   const [theme, setThemeState] = useState(getSavedTheme());
-  const { role, logout } = useAuth();
+  const { user, role, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -190,12 +194,12 @@ const BoardLayout = () => {
 
         <div className="board-actions">
           {role && (
-            <span className="board-role-badge" title="Demo permission level">
-              Role: {ROLE_LABELS[role] ?? role}
+            <span className="board-role-badge">
+              {user?.name ? `${user.name} · ` : ""}{ROLE_LABELS[role] ?? role}
             </span>
           )}
           <button type="button" className="board-switch-role" onClick={handleSwitchRole}>
-            Switch role
+            Sign out
           </button>
           <Link
             className="board-icon-button board-avatar-button"

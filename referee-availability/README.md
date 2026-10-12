@@ -1,3 +1,40 @@
+# Referee Availability — OVBABO
+
+## Running locally (demo mode)
+
+Demo mode uses an in-memory database, seeds demo games/referees, and creates
+four demo accounts (password `demo1234`):
+`admin@ovbabo.demo`, `assigner@ovbabo.demo`, `coach@ovbabo.demo`, `referee@ovbabo.demo`.
+
+```bash
+# Backend (http://localhost:8080)
+mvn spring-boot:run -Dspring-boot.run.profiles=demo
+
+# Frontend (http://localhost:3000, proxies API calls to 8080)
+npm install
+npm start
+```
+
+## Running against PostgreSQL (production profile)
+
+The default profile expects PostgreSQL and applies schema migrations with Flyway.
+
+```bash
+DATABASE_URL=jdbc:postgresql://<host>:5432/referee \
+DATABASE_USERNAME=<user> \
+DATABASE_PASSWORD=<password> \
+APP_BOOTSTRAP_ADMIN_EMAIL=<first-admin-email> \
+APP_BOOTSTRAP_ADMIN_PASSWORD=<first-admin-password> \
+java -jar target/referee-availability-1.0-SNAPSHOT.jar
+```
+
+`APP_BOOTSTRAP_ADMIN_*` creates the very first ADMIN account only when the user
+table is empty; afterwards that admin invites everyone else from the Accounts page.
+Email invites use SendGrid (`SENDGRID_API_KEY`, `NOTIFICATIONS_ENABLED=true`,
+`NOTIFICATIONS_FROM`) and links point at `APP_BASE_URL` (default `http://localhost:3000`).
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

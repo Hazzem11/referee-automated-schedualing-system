@@ -1,50 +1,56 @@
-import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { DEMO_ROLES, ROLE_LABELS } from "../auth/roles";
+import api from "../api";
 import "./LoginPage.css";
 import BouncingBall from "../components/BouncingBall";
-import { BoardIcon } from "../board/icons/BoardIcons";
 
-const ROLE_OPTIONS = [
-  {
-    id: DEMO_ROLES.ADMIN,
-    title: "Admin",
-    icon: "shield",
-    description: "Webmaster: site updates, documents, user accounts, and full admin tools.",
-  },
-  {
-    id: DEMO_ROLES.GAME_ASSIGNER,
-    title: "Game assigner",
-    icon: "shuffle",
-    description: "Run auto-assign, view all referee availability, and assign games.",
-  },
-  {
-    id: DEMO_ROLES.REFEREE_COACH,
-    title: "Referee coach",
-    icon: "clipboard-check",
-    description: "Evaluation tools and coach-only assignment views.",
-  },
-  {
-    id: DEMO_ROLES.REFEREE,
-    title: "Referee",
-    icon: "user-circle",
-    description: "Submit availability, see updates, and view your assignments.",
-  },
+const DEMO_ACCOUNTS = [
+  { role: "Admin", email: "admin@ovbabo.demo" },
+  { role: "Game assigner", email: "assigner@ovbabo.demo" },
+  { role: "Referee coach", email: "coach@ovbabo.demo" },
+  { role: "Referee", email: "referee@ovbabo.demo" },
 ];
 
 const LoginPage = () => {
-  const { setRole, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState(DEMO_ROLES.REFEREE);
+  const location = useLocation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [demo, setDemo] = useState(false);
 
-  if (isAuthenticated) {
+  useEffect(() => {
+    api
+      .get("/api/auth/config")
+      .then(({ data }) => setDemo(Boolean(data.demo)))
+      .catch(() => setDemo(false));
+  }, []);
+
+  if (!loading && isAuthenticated) {
     return <Navigate to="/board/members/updates" replace />;
   }
 
-  const handleContinue = () => {
-    setRole(selected);
-    navigate("/board/members/updates", { replace: true });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await login(email, password);
+      const from = location.state?.from || "/board/members/updates";
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err?.response?.data?.error || "Sign-in failed. Please try again.");
+      setSubmitting(false);
+    }
+  };
+
+  const fillDemo = (demoEmail) => {
+    setEmail(demoEmail);
+    setPassword("demo1234");
+    setError(null);
   };
 
   return (
@@ -52,35 +58,51 @@ const LoginPage = () => {
       <div className="login-card">
         <BouncingBall size={32} variant="hero" />
         <h1>OVBABO Official Website</h1>
-        <p className="login-sub">
-          Choose a permission level for this session. No password — this is for demonstration only.
-        </p>
+        <p className="login-sub">Sign in with your board account.</p>
 
-        <div className="login-role-grid" role="radiogroup" aria-label="Permission level">
-          {ROLE_OPTIONS.map((opt) => (
-            <label
-              key={opt.id}
-              className={`login-role-option ${selected === opt.id ? "selected" : ""}`}
-            >
-              <span className="login-role-icon" aria-hidden="true">
-                <BoardIcon name={opt.icon} />
-              </span>
-              <input
-                type="radio"
-                name="demoRole"
-                value={opt.id}
-                checked={selected === opt.id}
-                onChange={() => setSelected(opt.id)}
-              />
-              <span className="login-role-title">{opt.title}</span>
-              <span className="login-role-desc">{opt.description}</span>
-            </label>
-          ))}
-        </div>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <label className="login-field">
+            <span>Email</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </label>
+          <label className="login-field">
+            <span>Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </label>
 
-        <button type="button" className="login-continue" onClick={handleContinue}>
-          Continue as {ROLE_LABELS[selected]}
-        </button>
+          {error && <p className="login-error">{error}</p>}
+
+          <button type="submit" className="login-continue" disabled={submitting}>
+            {submitting ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+
+        {demo && (
+          <div className="login-demo-box">
+            <strong>Demo accounts</strong> (password <code>demo1234</code>):
+            <ul>
+              {DEMO_ACCOUNTS.map((acc) => (
+                <li key={acc.email}>
+                  <button type="button" onClick={() => fillDemo(acc.email)}>
+                    {acc.role}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
