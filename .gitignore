@@ -1,3 +1,5 @@
 target/
 node_modules/
 build/
+# React build output copied here only when packaging the single jar
+referee-availability/src/main/resources/static/

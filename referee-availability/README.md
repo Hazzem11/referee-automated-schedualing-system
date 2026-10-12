@@ -33,6 +33,25 @@ table is empty; afterwards that admin invites everyone else from the Accounts pa
 Email invites use SendGrid (`SENDGRID_API_KEY`, `NOTIFICATIONS_ENABLED=true`,
 `NOTIFICATIONS_FROM`) and links point at `APP_BASE_URL` (default `http://localhost:3000`).
 
+## Deploying (Railway / Render)
+
+The included `Dockerfile` builds one self-contained jar: React frontend bundled
+into the Spring Boot app (client-side routes fall back to `index.html`).
+
+1. Create a PostgreSQL database on the platform and note the connection details.
+2. Create a web service from this repo (root directory `referee-availability`,
+   Dockerfile detected automatically). The platform injects `PORT`.
+3. Set environment variables:
+   - `DATABASE_URL` (e.g. `jdbc:postgresql://<host>:5432/referee`), `DATABASE_USERNAME`, `DATABASE_PASSWORD`
+   - `APP_BASE_URL` = your public URL (used in invite emails)
+   - `APP_BOOTSTRAP_ADMIN_EMAIL` / `APP_BOOTSTRAP_ADMIN_PASSWORD` (first deploy only)
+   - `SENDGRID_API_KEY`, `NOTIFICATIONS_ENABLED=true`, `NOTIFICATIONS_FROM`,
+     `ASSIGNER_EMAILS` (for live email)
+4. Sign in with the bootstrap admin, then invite the president, assigner, and
+   referees from the **Accounts** page.
+
+To package the same jar locally: `npm run build && cp -r build/* src/main/resources/static/ && mvn package -DskipTests`.
+
 ---
 
 # Getting Started with Create React App
