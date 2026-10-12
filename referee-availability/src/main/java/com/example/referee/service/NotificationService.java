@@ -140,6 +140,8 @@ public class NotificationService {
                 + "<p style=\"color:#555;font-size:13px;\">This link expires in 7 days. If it has expired, "
                 + "ask your assigner to resend the invite.</p>");
         deliver(to, "You're invited — set your OVBABO account password", html);
+        // The link must be reachable even in log-only mode (no SendGrid key), e.g. for dev invites.
+        log.info("[EMAIL invite-link] To: {} | Link: {}", to, inviteUrl);
     }
 
     private void deliver(String to, String subject, String html) {
