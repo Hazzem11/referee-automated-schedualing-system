@@ -1,0 +1,465 @@
+\documentclass[10pt]{article}
+
+\usepackage[letterpaper,portrait,margin=0.45in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\setlength{\columnsep}{0.23in}
+\setlength{\columnseprule}{0.2pt}
+\setlist[enumerate]{leftmargin=*,nosep,label=(\alph*)}
+\pagestyle{plain}
+\renewcommand{\arraystretch}{1.05}
+
+\newcommand{\examlabel}[1]{%
+  \par\noindent\textbf{#1}\par\vspace{1pt}\hrule\vspace{3pt}}
+\newcommand{\question}[1]{\par\noindent\textbf{Question.} #1\par}
+\newcommand{\answer}{\par\noindent\textbf{Answer.} }
+\newcommand{\conclusion}[1]{%
+  \par\noindent\framebox[\columnwidth][l]{%
+    \parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule}{\textbf{Conclusion.} #1}}\par}
+
+\begin{document}
+\fontsize{9.4}{11.15}\selectfont
+
+% PAGE 1 ----------------------------------------------------------------------
+\begin{multicols*}{2}
+
+\examlabel{Exam 1 --- Question 2}
+\question{Apply gradient descent to
+\[
+  \begin{bmatrix}1&3\\3&1\end{bmatrix}
+  \begin{bmatrix}x\\y\end{bmatrix}
+  =
+  \begin{bmatrix}1\\1\end{bmatrix}.
+\]
+The matrix has eigenvalues $\lambda_1=4$ and $\lambda_2=-2$, with
+eigenvectors
+$v_1=\frac1{\sqrt2}(1,1)$ and $v_2=\frac1{\sqrt2}(1,-1)$.
+The unique solution is $x^\star=(1/4,1/4)$.}
+
+\textbf{(a)} What is the maximum rate $\rho^\star$ below which convergence
+is guaranteed for every initialization?
+
+\answer Let $A$ denote the matrix and use the sum-of-squares loss
+\[
+  F(z)=\lVert Az-b\rVert_2^2,
+  \qquad
+  \nabla F(z)=2A^\mathsf{T}(Az-b).
+\]
+If $e_t=z_t-z^\star$, then one gradient-descent step gives
+\[
+  e_{t+1}=(I-2\rho A^\mathsf{T}A)e_t.
+\]
+Since $A$ is symmetric, an eigenvalue $\lambda$ of $A$ produces eigenvalue
+$\lambda^2$ for $A^\mathsf{T}A$.  The corresponding error multiplier is
+$1-2\rho\lambda^2$.  Convergence for every initialization requires
+\[
+  |1-2\rho\lambda^2|<1
+  \quad\text{for both eigenvalues.}
+\]
+The largest squared eigenvalue is $4^2=16$, so
+\[
+  0<\rho<\frac1{16},
+  \qquad
+  \boxed{\rho^\star=\frac1{16}}.
+\]
+
+\textbf{(b)} With $\rho=0.01$ and $z_0=(1,0)$, the distance to $z^\star$
+is $\Theta(b^t)$. Find $b$.
+
+\answer The two error multipliers are
+\[
+  q_1=1-2(0.01)(4^2)=0.68,
+  \qquad
+  q_2=1-2(0.01)(-2)^2=0.92.
+\]
+The initial error has a nonzero component in the $v_2$ direction.
+Therefore the slower surviving factor controls the asymptotic distance:
+\[
+  \lVert z_t-z^\star\rVert_2=\Theta(0.92^t),
+  \qquad
+  \boxed{b=0.92}.
+\]
+
+\examlabel{Exam 1 --- Question 3}
+\question{Calculate the Boolean Fourier transforms below.  The input order
+is $(++,-+,+-,--)$.}
+
+\textbf{(a)} $f=[1,1,-1,-1]$.
+
+\answer This is exactly the function $f(x_1,x_2)=x_2$.  Hence
+\[
+  \widehat f(\{2\})=1,
+  \qquad
+  \widehat f(S)=0\quad(S\neq\{2\}).
+\]
+
+\textbf{(b)} $g=[0,1,1,1]$.
+
+\answer The function $1-g$ is the indicator of the point $(+,+)$:
+\[
+  1-g
+  =\operatorname{point}_{++}(x_1,x_2)
+  =\frac{(1+x_1)(1+x_2)}4.
+\]
+Expanding and subtracting from $1$ gives
+\[
+  \boxed{
+  g=\frac34-\frac14x_1-\frac14x_2-\frac14x_1x_2}.
+\]
+Thus its coefficients at
+$S=\varnothing,\{1\},\{2\},\{1,2\}$ are
+$3/4,-1/4,-1/4,-1/4$.
+
+\textbf{(c)} Let
+\[
+  h(x_1,x_2,x_3)=
+  \begin{cases}
+    f(x_1,x_2),&x_3=-1,\\
+    g(x_1,x_2),&x_3=+1.
+  \end{cases}
+\]
+
+\answer The factors $(1-x_3)/2$ and $(1+x_3)/2$ select the two cases:
+\[
+  h=\frac{1-x_3}{2}f+\frac{1+x_3}{2}g
+   =\frac{f+g}{2}+x_3\frac{g-f}{2}.
+\]
+Substituting $f=x_2$ and the polynomial for $g$ gives
+\[
+\boxed{
+\begin{aligned}
+h={}&\frac38-\frac18x_1+\frac38x_2-\frac18x_1x_2\\
+ &+\frac38x_3-\frac18x_1x_3-\frac58x_2x_3
+   -\frac18x_1x_2x_3 .
+\end{aligned}}
+\]
+Therefore, in the order
+$\varnothing,1,2,3,12,13,23,123$, the coefficient list is
+\[
+  \boxed{\frac38,-\frac18,\frac38,\frac38,
+  -\frac18,-\frac18,-\frac58,-\frac18}.
+\]
+
+\end{multicols*}
+\newpage
+
+% PAGE 2 ----------------------------------------------------------------------
+\begin{multicols*}{2}
+
+\examlabel{Exam 2 --- Question 2}
+\question{Let $A$ be the adjacency matrix of the 3-cycle, with zeros on the
+diagonal. Its largest eigenvalue is $\lambda_1=2$, with eigenvector
+$v_1=\frac1{\sqrt3}(1,1,1)$.}
+
+\textbf{(a)} If $x\perp v_1$, prove that normalized power iteration
+oscillates between $x$ and $-x$.
+
+\answer Write $x=(x_1,x_2,x_3)$. Orthogonality gives
+\[
+  x\cdot v_1=0
+  \quad\Longrightarrow\quad
+  x_1+x_2+x_3=0.
+\]
+Multiplication by the adjacency matrix yields
+\[
+  Ax=(x_2+x_3,\;x_3+x_1,\;x_1+x_2).
+\]
+Because the coordinate sum is zero,
+$x_2+x_3=-x_1$, $x_3+x_1=-x_2$, and
+$x_1+x_2=-x_3$. Therefore
+\[
+  Ax=(-x_1,-x_2,-x_3)=-x.
+\]
+If $x$ is normalized, then $\lVert Ax\rVert=\lVert-x\rVert=1$.
+Thus one iteration maps $x$ to $-x$ and the next maps $-x$ back to $x$.
+\[
+  \boxed{x,-x,x,-x,\ldots}
+\]
+
+\textbf{(b)} Deduce the other two eigenvalues.
+
+\answer The orthogonal complement of $v_1$ is two-dimensional, and the
+calculation above shows that $A$ acts as $-I$ on every vector in that
+space. Hence
+\[
+  \boxed{\lambda_2=\lambda_3=-1}.
+\]
+
+\examlabel{Exam 2 --- Question 3}
+\question{At $x=1,i,-1,-i$, the values of $f$ are $0,1,2,3$.
+Use
+\[
+  f(x)=f^+(x^2)+x f^-(x^2)
+\]
+to recover the polynomial representation of $f$.}
+
+\textbf{(a)} Find the value lists of $f^+$ and $f^-$.
+
+\answer Evaluate the decomposition at $x$ and $-x$. Adding eliminates the
+odd part and subtracting eliminates the even part:
+\[
+  f^+(x^2)=\frac{f(x)+f(-x)}2,
+  \qquad
+  f^-(x^2)=\frac{f(x)-f(-x)}{2x}.
+\]
+At $x=1$,
+\[
+  f^+(1)=\frac{0+2}{2}=1,
+  \qquad
+  f^-(1)=\frac{0-2}{2}=-1.
+\]
+At $x=i$, where $i^2=-1$,
+\[
+  f^+(-1)=\frac{1+3}{2}=2,
+  \qquad
+  f^-(-1)=\frac{1-3}{2i}=-\frac1i=i.
+\]
+Thus, over the domain $(1,-1)$,
+\[
+  \boxed{f^+=[1,2]},
+  \qquad
+  \boxed{f^-=[-1,i]}.
+\]
+
+\textbf{(b)} Find the degree-one polynomial representations of $f^+$ and
+$f^-$.
+
+\answer If $p(y)=\alpha+\beta y$, $p(1)=u$, and $p(-1)=v$, then
+\[
+  \alpha=\frac{u+v}{2},
+  \qquad
+  \beta=\frac{u-v}{2}.
+\]
+Applying this formula to the two lists gives
+\[
+  f^+(y)=\frac32-\frac12y,
+\]
+\[
+  f^-(y)=\frac{-1+i}{2}+\frac{-1-i}{2}y.
+\]
+
+\textbf{(c)} Reconstruct $f$.
+
+\answer Substitute $y=x^2$ and multiply the odd polynomial by $x$:
+\[
+\boxed{
+  f(x)=\frac32+\frac{-1+i}{2}x-\frac12x^2
+       +\frac{-1-i}{2}x^3}.
+\]
+
+\end{multicols*}
+\newpage
+
+% PAGE 3 ----------------------------------------------------------------------
+\begin{multicols*}{2}
+
+\examlabel{Exam 3 --- Question 1}
+\question{Apply gradient descent to the inconsistent scalar system
+$x=0$ and $x=1$.}
+
+\textbf{(a)} Write the sum-of-squares loss and find its minimizer.
+
+\answer The residuals are $x$ and $x-1$, so
+\[
+  F(x)=x^2+(x-1)^2.
+\]
+Differentiate:
+\[
+  F'(x)=2x+2(x-1)=4x-2.
+\]
+The minimum occurs where $F'(x^\star)=0$, hence
+\[
+  \boxed{x^\star=\frac12}.
+\]
+
+\textbf{(b)} Find
+$\dfrac{x_t-x^\star}{x_{t-1}-x^\star}$.
+
+\answer One gradient-descent step is
+\[
+  x_t=x_{t-1}-\rho(4x_{t-1}-2).
+\]
+Subtract $x^\star=1/2$ and factor:
+\[
+  x_t-\frac12
+  =(1-4\rho)\left(x_{t-1}-\frac12\right).
+\]
+Therefore
+\[
+  \boxed{\frac{x_t-x^\star}{x_{t-1}-x^\star}=1-4\rho}.
+\]
+
+\textbf{(c)} If $x_0=0$ and $\rho=1/8$, find $x_{20}$.
+
+\answer The multiplier is $1-4(1/8)=1/2$. Applying the recurrence twenty
+times gives
+\[
+  x_{20}-\frac12
+  =\left(\frac12\right)^{20}
+   \left(0-\frac12\right)
+  =-\frac1{2^{21}}.
+\]
+Thus
+\[
+  \boxed{x_{20}=\frac12-\frac1{2^{21}}}.
+\]
+
+\examlabel{Exam 3 --- Question 2(a--b)}
+\question{Apply subspace iteration to
+\[
+ A=
+ \begin{bmatrix}
+ 0&1&2\\
+ 1&0&0\\
+ 2&0&0
+ \end{bmatrix},
+\]
+starting from the standard basis $e_1,e_2,e_3$. Ignore $e_3$ initially.}
+
+\textbf{(a)} Show the first three rounds for the first two vectors.
+
+\answer Define
+\[
+  u=\frac1{\sqrt5}(0,1,2).
+\]
+\emph{Round 1.}
+\[
+  Ae_1=(0,1,2)=\sqrt5\,u,
+  \qquad
+  Ae_2=(1,0,0)=e_1.
+\]
+After normalization, $(x_1,x_2)=(u,e_1)$.
+
+\emph{Round 2.}
+\[
+  Au=(\sqrt5,0,0)=\sqrt5\,e_1,
+  \qquad
+  Ae_1=\sqrt5\,u.
+\]
+After normalization, $(x_1,x_2)=(e_1,u)$.
+
+\emph{Round 3.} The same computation switches them again, so
+$(x_1,x_2)=(u,e_1)$.
+
+\textbf{(b)} Use this behavior to find two eigenvalues.
+
+\answer Since $Ae_1=\sqrt5\,u$ and $Au=\sqrt5\,e_1$,
+\[
+  A(e_1+u)=\sqrt5(e_1+u),
+\]
+\[
+  A(e_1-u)=-\sqrt5(e_1-u).
+\]
+Therefore
+\[
+  \boxed{\lambda_1=\sqrt5,\qquad \lambda_2=-\sqrt5}.
+\]
+
+\end{multicols*}
+\newpage
+
+% PAGE 4 ----------------------------------------------------------------------
+\begin{multicols*}{2}
+
+\examlabel{Exam 3 --- Question 2(c--d)}
+\question{Prove that if $Ax_i$ and $Ax_j$ become linearly dependent for
+$i\neq j$, then zero is an eigenvalue. Use this to find the remaining
+eigenvalue of the matrix.}
+
+\answer Linear dependence means that some scalar $c$ satisfies
+$Ax_i=cAx_j$. By linearity,
+\[
+  A(x_i-cx_j)=Ax_i-cAx_j=0.
+\]
+The subspace-iteration state vectors are orthogonal, hence independent.
+Therefore $x_i-cx_j\neq0$.
+
+\conclusion{$A$ sends a nonzero vector to zero, so that vector is an
+eigenvector with eigenvalue $0$.}
+
+For the given matrix, dependence occurs in the first round:
+\[
+  Ae_2=(1,0,0),
+  \qquad
+  Ae_3=(2,0,0)=2Ae_2.
+\]
+Consequently,
+\[
+  A(2e_2-e_3)=0,
+\]
+and the remaining eigenvalue is $0$. The complete spectrum is
+\[
+  \boxed{\{\sqrt5,-\sqrt5,0\}}.
+\]
+
+\examlabel{Exam 3 --- Question 3}
+\question{The two-bit addressing function is
+\[
+ \operatorname{addr}(x,y,z_{++},z_{+-},z_{-+},z_{--})=z_{xy}.
+\]
+\begin{enumerate}
+\item Express it using the four point functions.
+\item Calculate
+$\widehat{\operatorname{addr}}(\varnothing)$,
+$\widehat{\operatorname{addr}}(\{1,2,3\})$, and
+$\widehat{\operatorname{addr}}(\{1,2,3,4\})$,
+where variables $3$ and $4$ are $z_{++}$ and $z_{+-}$.
+\end{enumerate}}
+
+\answer For $a,b\in\{-1,+1\}$, define
+\[
+  \operatorname{point}_{ab}(x,y)
+  =\frac{(1+ax)(1+by)}4.
+\]
+Exactly one point function equals $1$ for each input $(x,y)$, so
+\[
+\boxed{
+  \operatorname{addr}
+  =\sum_{a,b\in\{\pm1\}}
+    z_{ab}\operatorname{point}_{ab}(x,y)}.
+\]
+Equivalently, this is the sum of the $++,+-,-+,--$ terms.
+
+\textbf{Constant coefficient.}
+Every summand contains one $z$ variable, so no constant term appears:
+\[
+  \boxed{\widehat{\operatorname{addr}}(\varnothing)=0}.
+\]
+
+\textbf{Coefficient indexed by $\{1,2,3\}$.}
+This is the coefficient of $xyz_{++}$. Expand only the $++$ summand:
+\[
+\begin{aligned}
+ z_{++}\operatorname{point}_{++}(x,y)
+ &=\frac{z_{++}(1+x)(1+y)}4\\
+ &=\frac14\left(
+ z_{++}+xz_{++}+yz_{++}+xyz_{++}\right).
+\end{aligned}
+\]
+Thus
+\[
+  \boxed{\widehat{\operatorname{addr}}(\{1,2,3\})=\frac14}.
+\]
+
+\textbf{Coefficient indexed by $\{1,2,3,4\}$.}
+This asks for the monomial $xyz_{++}z_{+-}$. Every summand contains
+exactly one $z$ variable, never a product of two different $z$ variables.
+Therefore
+\[
+  \boxed{\widehat{\operatorname{addr}}(\{1,2,3,4\})=0}.
+\]
+
+\conclusion{Equivalently, every point function has degree $2$ in $x,y$,
+and multiplying by one addressed bit gives degree at most $3$.
+The degree-$4$ monomial $xyz_{++}z_{+-}$ cannot occur.}
+
+\end{multicols*}
+
+\end{document}
