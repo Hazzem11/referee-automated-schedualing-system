@@ -1,6 +1,6 @@
 \documentclass[10pt]{article}
 
-\usepackage[letterpaper,portrait,margin=0.45in]{geometry}
+\usepackage[letterpaper,portrait,margin=0.22in]{geometry}
 \usepackage{amsmath,amssymb,mathtools}
 \usepackage{microtype}
 \usepackage{multicol}
@@ -9,15 +9,19 @@
 \usepackage{lmodern}
 
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{2pt}
-\setlength{\columnsep}{0.23in}
-\setlength{\columnseprule}{0.2pt}
+\setlength{\parskip}{1pt}
+\setlength{\columnsep}{0.12in}
+\setlength{\columnseprule}{0pt}
+\setlength{\abovedisplayskip}{2.5pt}
+\setlength{\belowdisplayskip}{2.5pt}
+\setlength{\abovedisplayshortskip}{1.5pt}
+\setlength{\belowdisplayshortskip}{1.5pt}
 \setlist[enumerate]{leftmargin=*,nosep,label=(\alph*)}
 \pagestyle{plain}
 \renewcommand{\arraystretch}{1.05}
 
 \newcommand{\examlabel}[1]{%
-  \par\noindent\textbf{#1}\par\vspace{1pt}\hrule\vspace{3pt}}
+  \par\noindent\textbf{#1}\par\vspace{1pt}}
 \newcommand{\question}[1]{\par\noindent\textbf{Question.} #1\par}
 \newcommand{\answer}{\par\noindent\textbf{Answer.} }
 \newcommand{\conclusion}[1]{%
@@ -25,10 +29,10 @@
     \parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule}{\textbf{Conclusion.} #1}}\par}
 
 \begin{document}
-\fontsize{9.4}{11.15}\selectfont
+\fontsize{8.2}{9.45}\selectfont
 
 % PAGE 1 ----------------------------------------------------------------------
-\begin{multicols*}{2}
+\begin{multicols*}{3}
 
 \examlabel{Exam 1 --- Question 2}
 \question{Apply gradient descent to
@@ -147,12 +151,6 @@ $\varnothing,1,2,3,12,13,23,123$, the coefficient list is
   -\frac18,-\frac18,-\frac58,-\frac18}.
 \]
 
-\end{multicols*}
-\newpage
-
-% PAGE 2 ----------------------------------------------------------------------
-\begin{multicols*}{2}
-
 \examlabel{Exam 2 --- Question 2}
 \question{Let $A$ be the adjacency matrix of the 3-cycle, with zeros on the
 diagonal. Its largest eigenvalue is $\lambda_1=2$, with eigenvector
@@ -257,8 +255,8 @@ Applying this formula to the two lists gives
 \end{multicols*}
 \newpage
 
-% PAGE 3 ----------------------------------------------------------------------
-\begin{multicols*}{2}
+% PAGE 2 ----------------------------------------------------------------------
+\begin{multicols*}{3}
 
 \examlabel{Exam 3 --- Question 1}
 \question{Apply gradient descent to the inconsistent scalar system
@@ -361,12 +359,6 @@ Therefore
 \[
   \boxed{\lambda_1=\sqrt5,\qquad \lambda_2=-\sqrt5}.
 \]
-
-\end{multicols*}
-\newpage
-
-% PAGE 4 ----------------------------------------------------------------------
-\begin{multicols*}{2}
 
 \examlabel{Exam 3 --- Question 2(c--d)}
 \question{Prove that if $Ax_i$ and $Ax_j$ become linearly dependent for
